@@ -669,10 +669,10 @@ return;
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
 if(
-p.nome.toLowerCase().includes(termo) ||
+p.produto.toLowerCase().includes(termo)
 p.codigo.toLowerCase().includes(termo)
 ){
-prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
+prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
 }
 });
 }
@@ -1426,10 +1426,10 @@ background:#1fa84f;
 
 tEstoque.innerHTML+=`
 <tr>
-<td>${p.nome}</td>
+<td>${p.produto}</td>
 
 <td style="text-align:center;">
-${p.qtd}
+<td>${p.quantidade}</td>
 </td>
 
 <td style="text-align:center; color:${corStatus}; font-weight:bold;">
@@ -2445,6 +2445,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
