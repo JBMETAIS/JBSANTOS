@@ -669,12 +669,10 @@ return;
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
 if(
-p.produto.toLowerCase().includes(termo)
-p.codigo.toLowerCase().includes(termo)
+    p.produto.toLowerCase().includes(termo) ||
+    p.codigo.toLowerCase().includes(termo)
 ){
-prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
-}
-});
+
 }
 
 
@@ -699,9 +697,9 @@ atualizarSelect();
 function atualizarSelect(){
 prod.innerHTML="";
 produtos.forEach((p,i)=>{
-prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
-});
+prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
 }
+});
 
 function addItem(){
 const index=prod.value;
@@ -828,7 +826,7 @@ saldoApos: cliente.saldo
 });
 
 carrinho.forEach(item=>{
-produtos[item.index].quantidade
+    produtos[item.index].quantidade -= item.qtd;
 });
 
 localStorage.setItem("clientesJB", JSON.stringify(clientes));
@@ -852,8 +850,13 @@ return; // 🔥 PARA AQUI MESMO
 // ============================
 
 carrinho.forEach(item=>{
-if(produtos[index].quantidade < qtdVal) ...
-produtos[index].quantidade -= qtdVal;
+    if(produtos[item.index].quantidade < item.qtd){
+        alert("Estoque insuficiente");
+        return;
+    }
+
+    produtos[item.index].quantidade -= item.qtd;
+});
 
 vendas.push({
 id: vendaId,
@@ -1391,60 +1394,25 @@ w.print();
 
 
 function atualizarEstoque(){
+    tEstoque.innerHTML=`
+    <tr>
+    <th>Produto</th>
+    <th>Qtd</th>
+    <th>Status</th>
+    </tr>`;
 
-tEstoque.innerHTML=`
-<tr>
-<th style="width:50%;">Produto</th>
-<th style="width:15%; text-align:center;">Qtd</th>
-<th style="width:20%; text-align:center;">Status</th>
-<th style="width:15%; text-align:center;">Alarme</th>
-</tr>`;
+    produtos.forEach(p=>{
+        let baixo = p.quantidade <= p.minimo;
+        let status = baixo ? "BAIXO" : "OK";
 
-produtos.forEach(p=>{
-
-let baixo = p.quantidade <= p.minimo;let baixo = p.qtd <= p.min;
-
-let status = baixo ? "BAIXO" : "OK";
-
-let corStatus = baixo ? "#c62828" : "#1fa84f";
-
-let bolinha = baixo
-? `<span style="
-display:inline-block;
-width:20px;
-height:20px;
-border-radius:50%;
-background:#c62828;
-"></span>`
-: `<span style="
-display:inline-block;
-width:20px;
-height:20px;
-border-radius:50%;
-background:#1fa84f;
-"></span>`;
-
-tEstoque.innerHTML+=`
-<tr>
-<td>${p.produto}</td>
-
-<td style="text-align:center;">
-<td>${p.quantidade}</td>
-</td>
-
-<td style="text-align:center; color:${corStatus}; font-weight:bold;">
-${status}
-</td>
-
-<td style="text-align:center;">
-${bolinha}
-</td>
-
-</tr>`;
-});
-
+        tEstoque.innerHTML+=`
+        <tr>
+            <td>${p.produto}</td>
+            <td style="text-align:center;">${p.quantidade}</td>
+            <td style="text-align:center;">${status}</td>
+        </tr>`;
+    });
 }
-
 
 function atualizarHistorico(){
 
@@ -2445,6 +2413,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
