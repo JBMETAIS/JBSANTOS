@@ -598,31 +598,19 @@ parcelas.innerHTML+=`<option value="${i}">${i}x</option>`;
 
 async function addProduto() {
 
-  let nome = document.getElementById("pNome").value;
-  let codigo = document.getElementById("pCodigo").value;
-  let custo = parseFloat(document.getElementById("pCusto").value);
-  let venda = parseFloat(document.getElementById("pVenda").value);
-  let quantidade = parseInt(document.getElementById("pQtd").value);
-  let minimo = parseInt(document.getElementById("pMin").value);
-
   const { data, error } = await supabaseClient
     .from("produtos")
     .insert([{
-      nome: nome,
-      codigo: codigo,
-      custo: custo,
-      venda: venda,
-      quantidade: quantidade,   
-      minimo: minimo            
+      nome: "TESTE",
+      codigo: "123",
+      custo: 1,
+      venda: 2,
+      quantidade: 5,
+      minimo: 1
     }]);
 
-  if (error) {
-    alert("Erro ao salvar: " + error.message);
-    console.log(error);
-  } else {
-    alert("Produto salvo na nuvem com sucesso!");
-    carregarProdutos();
-  }
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
 }
 
 
@@ -2448,6 +2436,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
