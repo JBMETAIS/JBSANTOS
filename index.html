@@ -499,7 +499,10 @@ R$ <span id="total">0.00</span>
   const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co"
   const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_"
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 </script>
 
  
@@ -2321,7 +2324,7 @@ document.addEventListener("change", function(e){
 
 
 async function testarSupabase() {
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("produtos")
     .select("*");
 
@@ -2424,5 +2427,6 @@ atualizarClientes();
 
 
 </html>
+
 
 
