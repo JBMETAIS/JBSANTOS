@@ -601,13 +601,32 @@ async function addProduto() {
   const { data, error } = await supabaseClient
     .from("produtos")
     .insert([{
-      produto: "TESTE",
-      codigo: "123",
-      custo: 1,
-      venda: 2,
-      quantidade: 5,
-      minimo: 1
+      produto: pNome.value,
+      codigo: pCodigo.value,
+      custo: Number(pCusto.value),
+      venda: Number(pVenda.value),
+      quantidade: Number(pQtd.value),
+      minimo: Number(pMin.value)
     }]);
+
+  if (error) {
+    console.error("Erro ao salvar:", error);
+    alert("Erro ao salvar produto");
+    return;
+  }
+
+  alert("Produto salvo com sucesso!");
+
+  // opcional: limpar campos
+  pNome.value = "";
+  pCodigo.value = "";
+  pCusto.value = "";
+  pVenda.value = "";
+  pQtd.value = "";
+  pMin.value = "";
+
+  carregarProdutos(); // atualiza lista
+}
 
   console.log("DATA:", data);
   console.log("ERROR:", error);
@@ -2436,6 +2455,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
