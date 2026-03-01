@@ -598,33 +598,56 @@ parcelas.innerHTML+=`<option value="${i}">${i}x</option>`;
 
 async function addProduto() {
 
-  let produto = document.getElementById("produto").value;
-  let codigo = document.getElementById("codigo").value;
-  let custo = parseFloat(document.getElementById("custo").value);
-  let venda = parseFloat(document.getElementById("venda").value);
-  let quantidade = parseInt(document.getElementById("quantidade").value);
-  let minimo = parseInt(document.getElementById("minimo").value);
+  let nome = document.getElementById("pNome").value;
+  let codigo = document.getElementById("pCodigo").value;
+  let custo = parseFloat(document.getElementById("pCusto").value);
+  let venda = parseFloat(document.getElementById("pVenda").value);
+  let quantidade = parseInt(document.getElementById("pQtd").value);
+  let minimo = parseInt(document.getElementById("pMin").value);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("produtos")
-    .insert([
-      {
-        produto: produto,
-        codigo: codigo,
-        custo: custo,
-        venda: venda,
-        quantidade: quantidade,
-        minimo: minimo
-      }
-    ]);
+    .insert([{
+      nome: nome,
+      codigo: codigo,
+      custo: custo,
+      venda: venda,
+      qtd: quantidade,
+      min: minimo
+    }]);
 
   if (error) {
     alert("Erro ao salvar: " + error.message);
     console.log(error);
   } else {
     alert("Produto salvo na nuvem com sucesso!");
+    carregarProdutos();
   }
 }
+
+
+
+
+ async function carregarProdutos() {
+
+  const { data, error } = await supabaseClient
+    .from("produtos")
+    .select("*");
+
+  if (error) {
+    console.log(error);
+    return;
+  }
+
+  produtos = data; // substitui o array local
+  atualizarProdutos();
+  atualizarSelect();
+}
+
+
+ 
+
+
  
 function buscarProduto(){
 const termo = buscaProduto.value.toLowerCase().trim();
@@ -2338,8 +2361,7 @@ testarSupabase();
 
 
 window.onload=function(){
-atualizarProdutos();
-atualizarSelect();
+carregarProdutos(); // 🔥 agora vem da nuvem
 preencherParcelas();
 atualizarClientes();
 };
@@ -2427,6 +2449,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
