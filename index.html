@@ -1588,7 +1588,7 @@ async function carregarHistoricoDoBanco(){
   }
 
   // Converte formato do banco para o formato que seu sistema usa
-  vendas = data.map(v => ({
+ vendas = data.map(v => ({
     id: v.id, // 🔥 MUITO IMPORTANTE
     data: new Date(v.created_at).toLocaleString("pt-BR"),
     total: v.total,
@@ -2613,6 +2613,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
