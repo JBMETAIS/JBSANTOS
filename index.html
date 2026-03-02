@@ -517,7 +517,8 @@ let clientes = JSON.parse(localStorage.getItem("clientesJB")) || [];
 let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
-
+let orcamentoEmEdicaoId = null;
+ 
 let carrinho=[];
 let descontoAtual=0;
 
@@ -1322,32 +1323,70 @@ let pagamento = formaPagamento.value || "Não informado";
 let qtdParcelas = pagamento === "cartao" ? parcelas.value : 1;
 let valorParc = valorParcela.value || "";
 
-// 🔥 NÃO enviamos numero_orcamento
-const { data: orcamentoCriado, error } = await supabaseClient
-  .from("vendas")
-  .insert([{
-    cliente_id: null,
-    forma_pagamento: pagamento,
-    subtotal: subtotal,
-    desconto: descontoAtual,
-    total: total,
-    tipo: "ORCAMENTO"
-  }])
-  .select()
-  .single();
+let orcamentoId;
+let numero;
 
-if(error){
-  console.error(error);
-  alert("Erro ao salvar orçamento!");
-  return;
+// 🔥 SE ESTIVER EDITANDO
+if(orcamentoEmEdicaoId){
+
+  const { data, error } = await supabaseClient
+    .from("vendas")
+    .update({
+      forma_pagamento: pagamento,
+      subtotal: subtotal,
+      desconto: descontoAtual,
+      total: total
+    })
+    .eq("id", orcamentoEmEdicaoId)
+    .select()
+    .single();
+
+  if(error){
+    console.error(error);
+    alert("Erro ao atualizar orçamento!");
+    return;
+  }
+
+  numero = data.numero_orcamento;
+  orcamentoId = orcamentoEmEdicaoId;
+
+  // apagar itens antigos
+  await supabaseClient
+    .from("itens_venda")
+    .delete()
+    .eq("venda_id", orcamentoId);
+
+  alert("Orçamento atualizado com sucesso!");
+
+} else {
+
+  // 🔥 NOVO ORÇAMENTO
+  const { data: orcamentoCriado, error } = await supabaseClient
+    .from("vendas")
+    .insert([{
+      cliente_id: null,
+      forma_pagamento: pagamento,
+      subtotal: subtotal,
+      desconto: descontoAtual,
+      total: total,
+      tipo: "ORCAMENTO"
+    }])
+    .select()
+    .single();
+
+  if(error){
+    console.error(error);
+    alert("Erro ao salvar orçamento!");
+    return;
+  }
+
+  numero = orcamentoCriado.numero_orcamento;
+  orcamentoId = orcamentoCriado.id;
+
+  alert("Orçamento salvo com sucesso!");
 }
 
-// ✅ AGORA sim pegamos o número que o banco gerou
-let numero = orcamentoCriado.numero_orcamento;
-
-const orcamentoId = orcamentoCriado.id;
-
-// salva itens
+// 🔥 INSERE ITENS (serve para novo e edição)
 for(let item of carrinho){
 
   const produto = produtos[item.index];
@@ -1364,9 +1403,7 @@ for(let item of carrinho){
 
 await carregarHistoricoDoBanco();
 
-alert("Orçamento salvo com sucesso!");
-
-// monta objeto para impressão A4
+// impressão
 let orcamentoTemp = {
   numero: numero,
   data: new Date().toLocaleDateString(),
@@ -1388,8 +1425,10 @@ let orcamentoTemp = {
 imprimirOrcamentoA4(orcamentoTemp);
 
 alert("Orçamento gerado com sucesso!");
- 
- carrinho = [];
+
+orcamentoEmEdicaoId = null;
+
+carrinho = [];
 atualizarCarrinho();
 
 }
@@ -2367,26 +2406,22 @@ let orc = vendas[index];
 
 if(orc.tipo !== "ORCAMENTO") return;
 
-if(!confirm("Converter orçamento em venda?")) return;
+if(!confirm("Editar orçamento?")) return;
 
-// devolve itens para carrinho
+// 🔥 guarda o ID real do banco
+orcamentoEmEdicaoId = orc.id;
+
+// carrega itens no carrinho
 carrinho = JSON.parse(JSON.stringify(orc.itens));
 descontoAtual = orc.desconto || 0;
 clienteNome.value = orc.cliente || "";
 formaPagamento.value = orc.pagamento || "";
 
-// muda tipo
-orc.tipo = "VENDA";
-orc.data = new Date().toLocaleString();
-
-localStorage.setItem("vendasJB", JSON.stringify(vendas));
-
 show("pdv");
 atualizarCarrinho();
 
-alert("Orçamento carregado no PDV 🚀");
+alert("Orçamento carregado para edição ✏️");
 }
-
 
 
 function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo){
@@ -2677,6 +2712,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
