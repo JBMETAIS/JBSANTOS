@@ -700,7 +700,8 @@ prod.innerHTML+=`<option value="${i}">${p.nome}</option>`;
 });
 }
 
-function atualizarProdutos(){
+function atualizarProdutos() {
+
   const t = tProdutos;
 
   t.innerHTML = `
@@ -713,24 +714,23 @@ function atualizarProdutos(){
     </tr>
   `;
 
-  produtos.forEach((p)=>{
+  produtos.forEach(function(p){
 
-    console.log(p); // 👈 teste
+    console.log(p);
 
     t.innerHTML += `
       <tr>
-        <td>${p.produto}</td>
-        <td>${p.codigo}</td>
-        <td>R$ ${Number(p.venda).toFixed(2)}</td>
-        <td>${p.quantidade}</td>
+        <td>${p.produto || ""}</td>
+        <td>${p.codigo || ""}</td>
+        <td>R$ ${p.venda ? Number(p.venda).toFixed(2) : "0.00"}</td>
+        <td>${p.quantidade || 0}</td>
         <td>
-          <button class="red" onclick="excluirProduto(${p.id})">
-            Excluir
-          </button>
+          <button class="red" onclick="excluirProduto(${p.id})">Excluir</button>
         </td>
       </tr>
     `;
   });
+
 }
 
  
@@ -2491,4 +2491,5 @@ window.onload = async function(){
 
 
 </html>
+
 
