@@ -724,14 +724,14 @@ function addItem(){
 const index=prod.value;
 const qtdVal=parseInt(qtd.value);
 
-if(produtos[index].qtd<qtdVal){
+if(produtos[index].quantidade < qtdVal){
 alert("Estoque insuficiente");
 return;
 }
 
 carrinho.push({
 index:index,
-nome:produtos[index].nome,
+nome:produtos[index].produto,
 preco:produtos[index].venda,
 qtd:qtdVal
 });
@@ -2462,6 +2462,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
