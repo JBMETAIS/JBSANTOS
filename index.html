@@ -522,10 +522,10 @@ let descontoAtual = 0;
 
 async function carregarDados(){
 
-  const { data: p } = awaitsupabaseClient.from("produtos").select("*");
-  const { data: v } = awaitsupabaseClient.from("vendas").select("*");
-  const { data: c } = awaitsupabaseClient.from("clientes").select("*");
-  const { data: e } = awaitsupabaseClient.from("extratos").select("*");
+  const { data: p } = await supabaseClient.from("produtos").select("*");
+  const { data: v } = await supabaseClient.from("vendas").select("*");
+  const { data: c } = await supabaseClient.from("clientes").select("*");
+  const { data: e } = await supabaseClient.from("extratos").select("*");
 
   produtos = p || [];
   vendas = v || [];
@@ -630,7 +630,7 @@ async function addProduto() {
     return;
   }
 
-  const { error } = awaitsupabaseClient
+  const { error } = await supabaseClient
     .from("produtos")
     .insert([
       {
@@ -2498,6 +2498,7 @@ window.onload = async function(){
 
 
 </html>
+
 
 
 
