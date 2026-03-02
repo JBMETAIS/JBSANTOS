@@ -1220,7 +1220,7 @@ font-weight:bold;
 
 <div class="titulo">
 <h2>ORÇAMENTO</h2>
-Nº ${orc.numero || ""}<br>
+Nº ${String(orc.numero).padStart(4,'0')}
 Data: ${orc.data}
 </div>
 </div>
@@ -2668,6 +2668,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
