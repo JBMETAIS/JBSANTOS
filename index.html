@@ -1589,14 +1589,15 @@ async function carregarHistoricoDoBanco(){
 
   // Converte formato do banco para o formato que seu sistema usa
   vendas = data.map(v => ({
-    data: new Date(v.created_at).toLocaleString("pt-BR")
+    id: v.id, // 🔥 MUITO IMPORTANTE
+    data: new Date(v.created_at).toLocaleString("pt-BR"),
     total: v.total,
     tipo: "VENDA",
     cliente: "Consumidor",
     pagamento: v.forma_pagamento,
     itens: [],
     desconto: v.desconto || 0
-  }));
+}));
 
   atualizarHistorico();
 }
@@ -1689,19 +1690,28 @@ ${v.tipo === "PAGAMENTO" ? `
 }
 
 
-function excluirVenda(index){
+async function excluirVenda(index){
 
 if(!confirm("Deseja realmente excluir esta venda do histórico?")) return;
 
-vendas.splice(index,1);
+let venda = vendas[index];
 
-localStorage.setItem("vendasJB", JSON.stringify(vendas));
+const { error } = await supabaseClient
+  .from("vendas")
+  .delete()
+  .eq("id", venda.id);
+
+if(error){
+  console.error(error);
+  alert("Erro ao excluir venda do banco!");
+  return;
+}
 
 alert("Venda excluída com sucesso!");
 
-atualizarHistorico();
-
+await carregarHistoricoDoBanco();
 }
+ 
 
 
  
@@ -2603,6 +2613,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
