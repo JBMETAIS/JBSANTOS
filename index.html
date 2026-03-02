@@ -1589,7 +1589,7 @@ async function carregarHistoricoDoBanco(){
 
   // Converte formato do banco para o formato que seu sistema usa
   vendas = data.map(v => ({
-    data: new Date(v.created_at).toLocaleString(),
+    data: new Date(v.created_at).toLocaleString("pt-BR")
     total: v.total,
     tipo: "VENDA",
     cliente: "Consumidor",
@@ -2603,6 +2603,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
