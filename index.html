@@ -525,7 +525,7 @@ function show(id){
 document.querySelectorAll("section").forEach(s=>s.style.display="none");
 document.getElementById(id).style.display="block";
 if(id==="estoque") atualizarEstoque();
-if(id==="historico") atualizarHistorico();
+if(id==="historico") carregarHistoricoDoBanco();
 }
 
 function atualizarFormaPagamento(){
@@ -1005,6 +1005,7 @@ descontoAtual=0;
 
 atualizarCarrinho();
 atualizarClientes();
+ await carregarHistoricoDoBanco();
 }
 
 
@@ -1571,6 +1572,36 @@ ${bolinha}
 
 }
 
+
+
+async function carregarHistoricoDoBanco(){
+
+  const { data, error } = await supabaseClient
+    .from("vendas")
+    .select("*")
+    .order("id", { ascending: false });
+
+  if(error){
+    console.error(error);
+    alert("Erro ao carregar histórico do banco");
+    return;
+  }
+
+  // Converte formato do banco para o formato que seu sistema usa
+  vendas = data.map(v => ({
+    data: new Date(v.created_at).toLocaleString(),
+    total: v.total,
+    tipo: "VENDA",
+    cliente: "Consumidor",
+    pagamento: v.forma_pagamento,
+    itens: [],
+    desconto: v.desconto || 0
+  }));
+
+  atualizarHistorico();
+}
+
+ 
 
 function atualizarHistorico(){
 
@@ -2572,6 +2603,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
