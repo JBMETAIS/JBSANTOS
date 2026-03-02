@@ -499,7 +499,7 @@ R$ <span id="total">0.00</span>
 <script>
 
 // 🔥 CONFIGURAÇÃO SUPABASE
-const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.com";
+const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12amh2enp1aWpybHpyem15d2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMjcwMjAsImV4cCI6MjA4NzkwMzAyMH0.YRaa3s-3HCWuZ04Lbo8kUVi_DXv8ts8QEjluSj9ZQDw";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -532,13 +532,19 @@ async function carregarDados(){
 }
 
 
- 
+
 function show(id){
-document.querySelectorAll("section").forEach(s=>s.style.display="none");
-document.getElementById(id).style.display="block";
-if(id==="estoque") atualizarEstoque();
-if(id==="historico") atualizarHistorico();
+  document.querySelectorAll("section").forEach(s=>{
+    s.style.display = "none";
+  });
+
+  document.getElementById(id).style.display = "block";
+
+  if(id === "estoque") atualizarEstoque();
+  if(id === "historico") atualizarHistorico();
 }
+
+ 
 
 function atualizarFormaPagamento(){
 
@@ -2490,6 +2496,7 @@ window.onload = async function(){
 
 
 </html>
+
 
 
 
