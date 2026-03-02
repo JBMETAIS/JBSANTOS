@@ -494,16 +494,18 @@ R$ <span id="total">0.00</span>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
- 
 <script>
 
 // 🔥 CONFIGURAÇÃO SUPABASE
-const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co";
+const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.com";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im12amh2enp1aWpybHpyem15d2NsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzMjcwMjAsImV4cCI6MjA4NzkwMzAyMH0.YRaa3s-3HCWuZ04Lbo8kUVi_DXv8ts8QEjluSj9ZQDw";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
+</script>
 // 🔥 ARRAYS AGORA COMEÇAM VAZIOS
 let produtos = [];
 let vendas = [];
@@ -520,10 +522,10 @@ let descontoAtual = 0;
 
 async function carregarDados(){
 
-  const { data: p } = await supabase.from("produtos").select("*");
-  const { data: v } = await supabase.from("vendas").select("*");
-  const { data: c } = await supabase.from("clientes").select("*");
-  const { data: e } = await supabase.from("extratos").select("*");
+  const { data: p } = awaitsupabaseClient.from("produtos").select("*");
+  const { data: v } = awaitsupabaseClient.from("vendas").select("*");
+  const { data: c } = awaitsupabaseClient.from("clientes").select("*");
+  const { data: e } = awaitsupabaseClient.from("extratos").select("*");
 
   produtos = p || [];
   vendas = v || [];
@@ -628,7 +630,7 @@ async function addProduto() {
     return;
   }
 
-  const { error } = await supabase
+  const { error } = awaitsupabaseClient
     .from("produtos")
     .insert([
       {
@@ -658,7 +660,7 @@ async function addProduto() {
 
 async function carregarProdutos() {
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseClient
     .from("produtos")
     .select("*")
     .order("id", { ascending: true });
@@ -743,7 +745,7 @@ async function excluirProduto(id) {
 
   if (!confirm("Deseja excluir este produto?")) return;
 
-  const { error } = await supabase
+  const { error } = await supabaseClient
     .from("produtos")
     .delete()
     .eq("id", id);
@@ -2496,6 +2498,7 @@ window.onload = async function(){
 
 
 </html>
+
 
 
 
