@@ -598,25 +598,72 @@ parcelas.innerHTML+=`<option value="${i}">${i}x</option>`;
 
 async function addProduto() {
 
-  const { data, error } = await supabaseClient
-    .from("produtos")
-    .insert([{
-      produto: pNome.value,
-      codigo: pCodigo.value,
-      custo: Number(pCusto.value),
-      venda: Number(pVenda.value),
-      quantidade: Number(pQtd.value),
-      minimo: Number(pMin.value)
-    }]);
+  const nome = pNome.value.trim();
+  const codigo = pCodigo.value.trim();
+  const custo = Number(pCusto.value);
+  const venda = Number(pVenda.value);
+  const quantidade = Number(pQtd.value);
+  const minimo = Number(pMin.value);
 
-  if (error) {
-    console.error("Erro:", error);
-    alert("Erro ao salvar produto");
+  if(!nome || !codigo){
+    alert("Preencha nome e código!");
     return;
   }
 
-  alert("Produto salvo!");
+  // 🔎 Verifica se já existe produto com esse código
+  const { data: produtoExistente, error: erroBusca } = await supabaseClient
+    .from("produtos")
+    .select("*")
+    .eq("codigo", codigo)
+    .single();
 
+  if (produtoExistente) {
+
+    // 🔄 Se já existir → soma quantidade
+    const novaQuantidade = produtoExistente.quantidade + quantidade;
+
+    const { error: erroUpdate } = await supabaseClient
+      .from("produtos")
+      .update({
+        quantidade: novaQuantidade,
+        custo: custo,
+        venda: venda,
+        produto: nome
+      })
+      .eq("codigo", codigo);
+
+    if (erroUpdate) {
+      console.error(erroUpdate);
+      alert("Erro ao atualizar produto");
+      return;
+    }
+
+    alert("Produto atualizado e estoque somado!");
+
+  } else {
+
+    // ➕ Se não existir → cria novo
+    const { error: erroInsert } = await supabaseClient
+      .from("produtos")
+      .insert([{
+        produto: nome,
+        codigo: codigo,
+        custo: custo,
+        venda: venda,
+        quantidade: quantidade,
+        minimo: minimo
+      }]);
+
+    if (erroInsert) {
+      console.error(erroInsert);
+      alert("Erro ao salvar produto");
+      return;
+    }
+
+    alert("Produto cadastrado com sucesso!");
+  }
+
+  // limpa campos
   pNome.value = "";
   pCodigo.value = "";
   pVenda.value = "";
@@ -628,6 +675,7 @@ async function addProduto() {
 }
 
 
+ 
  async function carregarProdutos() {
 
   const { data, error } = await supabaseClient
@@ -1564,6 +1612,7 @@ atualizarHistorico();
 }
 
 
+ 
 function salvarConfig(){
 
 config={
@@ -2462,6 +2511,7 @@ atualizarClientes();
 
 
 </html>
+
 
 
 
