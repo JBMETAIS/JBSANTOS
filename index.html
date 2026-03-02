@@ -1364,9 +1364,192 @@ await carregarHistoricoDoBanco();
 
 alert("Orçamento salvo com sucesso!");
 
-imprimirCupom(total,"ORÇAMENTO");
+// monta objeto igual ao histórico usa
+let orcamentoTemp = {
+  numero: numero,
+  data: new Date().toLocaleDateString(),
+  total: total,
+  tipo: "ORCAMENTO",
+  cliente: cliente,
+  pagamento: pagamento,
+  desconto: descontoAtual,
+  subtotal: subtotal,
+  parcelas: qtdParcelas,
+  valorParcela: valorParc,
+  itens: JSON.parse(JSON.stringify(carrinho))
+};
+
+// abre no layout A4
+imprimirOrcamentoA4(orcamentoTemp);
 
 }
+
+
+
+
+ function imprimirOrcamentoA4(orc){
+
+let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
+
+let w = window.open("", "", "width=900,height=700");
+
+let html = `
+<html>
+<head>
+<title>Orçamento</title>
+
+<style>
+@media print {
+*{
+-webkit-print-color-adjust: exact !important;
+print-color-adjust: exact !important;
+}
+}
+@page{ size:A4; margin:15mm; }
+
+body{font-family:Arial;margin:0}
+
+.topo{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px;
+}
+
+.logo{height:70px}
+
+.titulo{text-align:right;}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th{
+background:#000;
+color:#fff;
+padding:8px;
+border:1px solid #000;
+}
+
+td{
+border:1px solid #000;
+padding:8px;
+}
+
+.info{
+border:1px solid #000;
+padding:10px;
+margin-top:10px;
+}
+
+.footer{
+display:flex;
+margin-top:15px;
+}
+
+.pagamento{
+flex:1;
+border:1px solid #000;
+padding:10px;
+min-height:70px;
+}
+
+.total{
+width:250px;
+border:1px solid #000;
+margin-left:10px;
+padding:10px;
+}
+
+.totalFinal{
+font-size:22px;
+font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topo">
+<img src="logo.png" class="logo">
+<div class="titulo">
+<h2>ORÇAMENTO</h2>
+Nº ${orc.numero}<br>
+Data: ${orc.data}
+</div>
+</div>
+
+<div style="font-size:13px;margin-bottom:10px;">
+<b>${empresa.nome || ""}</b><br>
+${empresa.endereco || ""}<br>
+${empresa.telefone || ""}
+</div>
+
+<div class="info">
+<b>Cliente:</b> ${orc.cliente}
+</div>
+
+<table>
+<tr>
+<th>Item</th>
+<th>Descrição</th>
+<th>Valor</th>
+<th>Qtd</th>
+<th>Total</th>
+</tr>
+`;
+
+orc.itens.forEach((i,index)=>{
+let sub = i.preco * i.qtd;
+
+html += `
+<tr>
+<td>${index+1}</td>
+<td>${i.nome}</td>
+<td>R$ ${i.preco.toFixed(2)}</td>
+<td>${i.qtd}</td>
+<td>R$ ${sub.toFixed(2)}</td>
+</tr>`;
+});
+
+html += `
+</table>
+
+<div class="footer">
+
+<div class="pagamento">
+<b>Forma de pagamento:</b> ${orc.pagamento}<br>
+${orc.pagamento === "cartao" ? `
+<b>Parcelas:</b> ${orc.parcelas}x<br>
+<b>Valor por parcela:</b> ${orc.valorParcela}
+` : ""}
+</div>
+
+<div class="total">
+Subtotal: R$ ${orc.subtotal.toFixed(2)}<br>
+Desconto: ${orc.desconto.toFixed(2)}%
+<hr>
+<div class="totalFinal">
+Total: R$ ${orc.total.toFixed(2)}
+</div>
+</div>
+
+</div>
+
+</body>
+</html>
+`;
+
+w.document.write(html);
+w.document.close();
+w.print();
+}
+
+
+
+
 
  
 
@@ -2483,6 +2666,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
