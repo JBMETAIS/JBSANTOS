@@ -1935,6 +1935,114 @@ async function cadastrarCliente(){
   carregarClientes(); // 🔥 atualiza direto do banco
 }
 
+
+
+
+async function verExtratoCompleto(clienteId) {
+  if (!clienteId) return;
+
+  // Busca o cliente
+  let cliente = clientes.find(c => c.id === clienteId);
+  if (!cliente) {
+    alert("Cliente não encontrado!");
+    return;
+  }
+
+  // Busca vendas e pagamentos no Supabase
+  const { data: vendasData, error: errVendas } = await supabaseClient
+    .from("vendas")
+    .select("*, itens_venda(*)")
+    .eq("cliente_id", clienteId)
+    .order("created_at", { ascending: false });
+
+  if (errVendas) {
+    console.error(errVendas);
+    alert("Erro ao carregar vendas do extrato");
+    return;
+  }
+
+  const { data: pagamentosData, error: errPag } = await supabaseClient
+    .from("pagamentos")
+    .select("*")
+    .eq("cliente_id", clienteId)
+    .order("created_at", { ascending: false });
+
+  if (errPag) {
+    console.error(errPag);
+    alert("Erro ao carregar pagamentos do extrato");
+    return;
+  }
+
+  // Mescla vendas e pagamentos por data
+  let registros = [];
+
+  vendasData.forEach(v => {
+    registros.push({
+      data: new Date(v.created_at),
+      descricao: "Compra PDV",
+      valor: v.total
+    });
+  });
+
+  pagamentosData.forEach(p => {
+    registros.push({
+      data: new Date(p.created_at),
+      descricao: "Pagamento",
+      valor: -p.valor
+    });
+  });
+
+  // Ordena por data decrescente
+  registros.sort((a, b) => b.data - a.data);
+
+  // Calcula saldo corrente
+  let saldo = 0;
+  registros.forEach(r => saldo += r.valor);
+
+  // Monta o HTML da tabela
+  let html = `<h3>Extrato de ${cliente.nome}</h3>`;
+  if (registros.length === 0) {
+    html += "<p>Sem registros.</p>";
+  } else {
+    html += `<table style="width:100%; border-collapse:collapse; margin-top:10px;">
+      <tr>
+        <th style="text-align:left; padding:5px;">Data</th>
+        <th style="text-align:left; padding:5px;">Descrição</th>
+        <th style="text-align:right; padding:5px;">Valor</th>
+        <th style="text-align:right; padding:5px;">Saldo</th>
+      </tr>`;
+
+    let saldoCorrente = 0;
+    registros.forEach(r => {
+      saldoCorrente += r.valor;
+      html += `<tr>
+        <td style="padding:5px;">${r.data.toLocaleString("pt-BR")}</td>
+        <td style="padding:5px;">${r.descricao}</td>
+        <td style="padding:5px; text-align:right;">R$ ${r.valor.toFixed(2)}</td>
+        <td style="padding:5px; text-align:right;">R$ ${saldoCorrente.toFixed(2)}</td>
+      </tr>`;
+    });
+
+    html += "</table>";
+  }
+
+  // Mostra na modal
+  const modal = document.getElementById("modalExtrato");
+  modal.innerHTML = `
+    <div style="background:#fff; padding:20px; border-radius:10px; max-height:70vh; overflow:auto; width:400px;">
+      ${html}
+      <button style="margin-top:10px; padding:8px 12px; cursor:pointer;" onclick="fecharExtrato()">Fechar</button>
+    </div>
+  `;
+  modal.style.display = "flex";
+}
+
+ 
+
+
+
+
+ 
  
 function atualizarClientes(){
 
@@ -2782,6 +2890,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
