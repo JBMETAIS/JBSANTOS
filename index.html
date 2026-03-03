@@ -1309,131 +1309,157 @@ return numero;
 
 async function gerarOrcamento(){
 
-console.log("orcamentoEmEdicaoId:", orcamentoEmEdicaoId);
-console.log("Carrinho:", carrinho);
- 
-if(carrinho.length === 0){
-  alert("Carrinho vazio");
-  return;
-}
-
-if(!confirm("Gerar orçamento?")) return;
-
-let total = parseFloat(document.getElementById("total").innerText);
-let subtotal = parseFloat(document.getElementById("subtotal").innerText);
-let cliente = clienteNome.value || "Consumidor";
-let pagamento = formaPagamento.value || "Não informado";
-let qtdParcelas = pagamento === "cartao" ? parcelas.value : 1;
-let valorParc = valorParcela.value || "";
-
-let orcamentoId;
-let numero;
-
-// 🔥 SE ESTIVER EDITANDO
-if(orcamentoEmEdicaoId){
-
-  const { data, error } = await supabaseClient
-    .from("vendas")
-    .update({
-      forma_pagamento: pagamento,
-      subtotal: subtotal,
-      desconto: descontoAtual,
-      total: total
-    })
-    .eq("id", orcamentoEmEdicaoId)
-    .select()
-    
-
-  if(error){
-    console.error(error);
-    alert("Erro ao atualizar orçamento!");
+  console.log("orcamentoEmEdicaoId:", orcamentoEmEdicaoId);
+  console.log("Carrinho:", carrinho);
+  
+  if(carrinho.length === 0){
+    alert("Carrinho vazio");
     return;
   }
 
-  numero = data.numero_orcamento;
-  orcamentoId = orcamentoEmEdicaoId;
+  if(!confirm("Gerar orçamento?")) return;
 
-  // apagar itens antigos
-  await supabaseClient
-    .from("itens_venda")
-    .delete()
-    .eq("venda_id", orcamentoId);
+  let total = parseFloat(document.getElementById("total").innerText);
+  let subtotal = parseFloat(document.getElementById("subtotal").innerText);
+  let cliente = clienteNome.value || "Consumidor";
+  let pagamento = formaPagamento.value || "Não informado";
+  let qtdParcelas = pagamento === "cartao" ? parcelas.value : 1;
+  let valorParc = valorParcela.value || "";
 
-  alert("Orçamento atualizado com sucesso!");
+  let orcamentoId;
+  let numero;
 
-} else {
+  // ================================
+  // 🔥 SE ESTIVER EDITANDO
+  // ================================
+  if(orcamentoEmEdicaoId){
 
+    const { data, error } = await supabaseClient
+      .from("vendas")
+      .update({
+        forma_pagamento: pagamento,
+        subtotal: subtotal,
+        desconto: descontoAtual,
+        total: total
+      })
+      .eq("id", orcamentoEmEdicaoId)
+      .select()
+      .single();
+
+    if(error){
+      console.error(error);
+      alert("Erro ao atualizar orçamento!");
+      return;
+    }
+
+    numero = data.numero_orcamento;
+    orcamentoId = data.id;
+
+    // 🔥 Apaga itens antigos
+    const { error: deleteError } = await supabaseClient
+      .from("itens_venda")
+      .delete()
+      .eq("venda_id", orcamentoId);
+
+    if(deleteError){
+      console.error(deleteError);
+      alert("Erro ao atualizar itens do orçamento!");
+      return;
+    }
+
+    alert("Orçamento atualizado com sucesso!");
+
+  } 
+  // ================================
   // 🔥 NOVO ORÇAMENTO
-  const { data: orcamentoCriado, error } = await supabaseClient
-    .from("vendas")
-    .insert([{
-      cliente_id: null,
-      forma_pagamento: pagamento,
-      subtotal: subtotal,
-      desconto: descontoAtual,
-      total: total,
-      tipo: "ORCAMENTO"
-    }])
-    .select()
-    .single();
+  // ================================
+  else {
 
-  if(error){
-    console.error(error);
-    alert("Erro ao salvar orçamento!");
-    return;
+    const { data, error } = await supabaseClient
+      .from("vendas")
+      .insert([{
+        cliente_id: null,
+        forma_pagamento: pagamento,
+        subtotal: subtotal,
+        desconto: descontoAtual,
+        total: total,
+        tipo: "ORCAMENTO"
+      }])
+      .select()
+      .single();
+
+    if(error){
+      console.error(error);
+      alert("Erro ao salvar orçamento!");
+      return;
+    }
+
+    numero = data.numero_orcamento;
+    orcamentoId = data.id;
+
+    alert("Orçamento salvo com sucesso!");
   }
 
-  numero = orcamentoCriado.numero_orcamento;
-  orcamentoId = orcamentoCriado.id;
+  // ================================
+  // 🔥 INSERE ITENS (novo e edição)
+  // ================================
+  for(let item of carrinho){
 
-  alert("Orçamento salvo com sucesso!");
-}
+    const produto = produtos[item.index];
 
-// 🔥 INSERE ITENS (serve para novo e edição)
-for(let item of carrinho){
+    if(!produto){
+      console.error("Produto inválido:", item);
+      continue;
+    }
 
-  const produto = produtos[item.index];
+    const { error: itemError } = await supabaseClient
+      .from("itens_venda")
+      .insert([{
+        venda_id: orcamentoId,
+        produto_id: produto.id,
+        quantidade: item.qtd,
+        preco_unitario: item.preco
+      }]);
 
-  await supabaseClient
-    .from("itens_venda")
-    .insert([{
-      venda_id: orcamentoId,
-      produto_id: produto.id,
-      quantidade: item.qtd,
-      preco_unitario: item.preco
-    }]);
-}
+    if(itemError){
+      console.error(itemError);
+      alert("Erro ao salvar item do orçamento!");
+      return;
+    }
+  }
 
-await carregarHistoricoDoBanco();
+  await carregarHistoricoDoBanco();
 
-// impressão
-let orcamentoTemp = {
-  numero: numero,
-  data: new Date().toLocaleDateString(),
-  total: total,
-  tipo: "ORCAMENTO",
-  cliente: cliente,
-  pagamento: pagamento,
-  desconto: descontoAtual,
-  subtotal: subtotal,
-  parcelas: qtdParcelas,
-  valorParcela: valorParc,
-  itens: carrinho.map(item => ({
-    nome: produtos[item.index].produto,
-    qtd: item.qtd,
-    preco: item.preco
-  }))
-};
+  // ================================
+  // 🔥 IMPRESSÃO
+  // ================================
+  let orcamentoTemp = {
+    numero: numero,
+    data: new Date().toLocaleDateString(),
+    total: total,
+    tipo: "ORCAMENTO",
+    cliente: cliente,
+    pagamento: pagamento,
+    desconto: descontoAtual,
+    subtotal: subtotal,
+    parcelas: qtdParcelas,
+    valorParcela: valorParc,
+    itens: carrinho.map(item => ({
+      nome: produtos[item.index].produto,
+      qtd: item.qtd,
+      preco: item.preco
+    }))
+  };
 
-imprimirOrcamentoA4(orcamentoTemp);
+  imprimirOrcamentoA4(orcamentoTemp);
 
-alert("Orçamento gerado com sucesso!");
+  alert("Orçamento gerado com sucesso!");
 
-orcamentoEmEdicaoId = null;
+  // 🔥 limpa modo edição
+  orcamentoEmEdicaoId = null;
 
-carrinho = [];
-atualizarCarrinho();
-
+  carrinho = [];
+  atualizarCarrinho();
 }
 
 
@@ -2726,6 +2752,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
