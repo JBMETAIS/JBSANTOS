@@ -1896,47 +1896,6 @@ async function verExtrato(clienteId){
 }
 
 
-function fecharExtrato(){
-document.getElementById("modalExtrato").style.display = "none";
-}
-
-
-async function cadastrarCliente(){
-
-  let nome = cNome.value.trim();
-  let telefone = cTelefone.value.trim();
-  let limite = parseFloat(cLimite.value) || 500;
-
-  if(!nome){
-    alert("Digite o nome do cliente");
-    return;
-  }
-
-  const { error } = await supabaseClient
-    .from("clientes")
-    .insert([{
-      nome: nome,
-      telefone: telefone,
-      limite: limite
-    }]);
-
-  if(error){
-    console.error(error);
-    alert("Erro ao cadastrar cliente");
-    return;
-  }
-
-  alert("Cliente cadastrado com sucesso!");
-
-  cNome.value="";
-  cTelefone.value="";
-  cLimite.value=500;
-
-  carregarClientes(); // 🔥 atualiza direto do banco
-}
-
-
-
 
 async function verExtratoCompleto(clienteId) {
   if (!clienteId) return;
@@ -1965,7 +1924,7 @@ async function verExtratoCompleto(clienteId) {
     .from("pagamentos")
     .select("*")
     .eq("cliente_id", clienteId)
-    .order("created_at", { ascending: false });
+    .order("criado_em", { ascending: false });
 
   if (errPag) {
     console.error(errPag);
@@ -1986,7 +1945,7 @@ async function verExtratoCompleto(clienteId) {
 
   pagamentosData.forEach(p => {
     registros.push({
-      data: new Date(p.created_at),
+      data: new Date(p.criado_em),
       descricao: "Pagamento",
       valor: -p.valor
     });
@@ -2037,9 +1996,51 @@ async function verExtratoCompleto(clienteId) {
   modal.style.display = "flex";
 }
 
+
  
 
 
+
+ 
+
+function fecharExtrato(){
+document.getElementById("modalExtrato").style.display = "none";
+}
+
+
+async function cadastrarCliente(){
+
+  let nome = cNome.value.trim();
+  let telefone = cTelefone.value.trim();
+  let limite = parseFloat(cLimite.value) || 500;
+
+  if(!nome){
+    alert("Digite o nome do cliente");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("clientes")
+    .insert([{
+      nome: nome,
+      telefone: telefone,
+      limite: limite
+    }]);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao cadastrar cliente");
+    return;
+  }
+
+  alert("Cliente cadastrado com sucesso!");
+
+  cNome.value="";
+  cTelefone.value="";
+  cLimite.value=500;
+
+  carregarClientes(); // 🔥 atualiza direto do banco
+}
 
 
  
@@ -2078,7 +2079,7 @@ R$ ${disponivel.toFixed(2)}
 <div class="btn-group">
 
 <div class="tooltip">
-<button class="btn-small" onclick="verExtrato(${c.id})">📄</button>
+<button class="btn-small" onclick="verExtratoCompleto(${c.id})">📄</button>
 <span class="tooltip-text">Ver Extrato</span>
 </div>
 
@@ -2890,6 +2891,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
