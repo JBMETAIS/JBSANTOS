@@ -554,7 +554,8 @@ let pagamento = formaPagamento.value;
 
 if(pagamento === "cartao"){
     divParcelas.style.display = "block";
-}else{
+}
+else{
     divParcelas.style.display = "none";
 }
 
@@ -2568,7 +2569,7 @@ w.print();
 
 
 
-function verificarFormaPagamento(){
+function verificarFormaPagamentoModal(){
 
 let forma = document.getElementById("formaPagamentoSelect").value;
 let box = document.getElementById("parcelamentoBox");
@@ -2621,8 +2622,8 @@ if(parcelas && valor){
 
 document.addEventListener("input", function(e){
     if(e.target.id === "valorPagamento"){
-        verificarFormaPagamento();
-    }
+    verificarFormaPagamentoModal();
+}
 });
 
 document.addEventListener("change", function(e){
@@ -2736,6 +2737,7 @@ atualizarClientes();
 
 </body>
 </html>
+
 
 
 
