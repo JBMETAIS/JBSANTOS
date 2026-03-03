@@ -881,6 +881,10 @@ if(!confirm("Confirmar finalização da venda?")){
 let total=parseFloat(document.getElementById("total").innerText);
 let vendaId = Date.now();
 
+
+const permitido = await podeFinalizarVenda(clienteId, totalVenda);
+if(!permitido) return;
+ 
 // ============================
 // 🔥 SE FOR MARCAR NA CONTA
 // ============================
@@ -1874,84 +1878,21 @@ return cliente;
 
 
 
-function verExtrato(clienteId){
+async function verExtrato(clienteId){
 
-let cliente = clientes.find(c => c.id === clienteId);
+  const { data, error } = await supabaseClient
+    .from("vendas")
+    .select("*")
+    .eq("cliente_id", clienteId)
+    .order("criado_em", { ascending: false });
 
-if(!cliente){
-alert("Cliente não encontrado");
-return;
-}
+  if(error){
+    console.error(error);
+    alert("Erro ao carregar extrato");
+    return;
+  }
 
-let lista = extratos
-.filter(e => e.clienteId === clienteId)
-.sort((a,b)=> new Date(b.data) - new Date(a.data));
-
-document.getElementById("extratoNome").innerText = cliente.nome;
-
-let saldoEl = document.getElementById("extratoSaldo");
-
-saldoEl.innerText = "R$ " + cliente.saldo.toFixed(2);
-saldoEl.style.color = cliente.saldo > 0 ? "#c62828" : "#2e7d32";
-
-let tabela = document.getElementById("extratoTabela");
-
-tabela.innerHTML = "";
-
-if(lista.length === 0){
-
-tabela.innerHTML = `
-<tr>
-<td colspan="4" style="text-align:center;padding:15px;">
-Sem movimentações
-</td>
-</tr>
-`;
-
-}else{
-
-lista.forEach(e=>{
-
-let cor = e.valor < 0 ? "#2e7d32" : "#c62828";
-
-let sinal = e.valor < 0 ? "-" : "+";
-
-// 🔥 define descrição padrão
-let descricaoFinal = "";
-let icone = "";
-
-if(e.valor > 0){
-icone = "🛒";
-descricaoFinal = "Compra";
-}else{
-icone = "💰";
-descricaoFinal = "Pagamento recebido";
-}
-
-tabela.innerHTML += `
-<tr>
-<td style="padding:8px;">${e.data}</td>
-
-<td style="padding:8px;">
-${icone} ${descricaoFinal}
-</td>
-
-<td style="padding:8px; color:${cor}; font-weight:bold;">
-${sinal} R$ ${Math.abs(e.valor).toFixed(2)}
-</td>
-
-<td style="padding:8px;">
-R$ ${e.saldoApos.toFixed(2)}
-</td>
-</tr>
-`;
-
-});
-
-}
-
-document.getElementById("modalExtrato").style.display = "flex";
-
+  console.log("Extrato:", data);
 }
 
 
@@ -2059,23 +2000,25 @@ R$ ${disponivel.toFixed(2)}
 });
 }
 
-function reimprimirUltimaVenda(nomeCliente){
+async function reimprimirUltimaVenda(clienteId){
 
-let vendasCliente = vendas.filter(v =>
-v.cliente === nomeCliente &&
-v.pagamento === "conta"
-);
+  const { data, error } = await supabaseClient
+    .from("vendas")
+    .select("*, itens_venda(*)")
+    .eq("cliente_id", clienteId)
+    .order("criado_em", { ascending: false })
+    .limit(1)
+    .single();
 
-if(vendasCliente.length === 0){
-alert("Nenhuma venda na conta encontrada.");
-return;
+  if(error){
+    console.error(error);
+    alert("Erro ao buscar venda");
+    return;
+  }
+
+  imprimirVenda(data);
 }
-
-let ultimaVenda = vendasCliente[vendasCliente.length - 1];
-
-reimprimirCupomVenda(ultimaVenda);
-
-}
+ 
 
 function novaVendaCliente(nomeCliente){
 
@@ -2120,6 +2063,33 @@ setTimeout(() => {
 }
 
 
+
+
+
+async function registrarPagamento(clienteId, valor){
+
+  const { error } = await supabaseClient
+    .from("pagamentos")
+    .insert([{
+      cliente_id: clienteId,
+      valor: valor
+    }]);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao registrar pagamento");
+    return;
+  }
+
+  alert("Pagamento registrado com sucesso");
+}
+
+
+ 
+
+
+
+ 
 
 function confirmarPagamento(){
 
@@ -2191,21 +2161,14 @@ clientePagamentoAtual = null;
 
 
 
-async function excluirCliente(nomeCliente){
-
-  let cliente = clientes.find(c => c.nome === nomeCliente);
-
-  if(!cliente){
-    alert("Cliente não encontrado.");
-    return;
-  }
+async function excluirCliente(clienteId){
 
   if(!confirm("Deseja realmente excluir este cliente?")) return;
 
   const { error } = await supabaseClient
     .from("clientes")
     .delete()
-    .eq("id", cliente.id);
+    .eq("id", clienteId);
 
   if(error){
     console.error(error);
@@ -2213,34 +2176,12 @@ async function excluirCliente(nomeCliente){
     return;
   }
 
-  alert("Cliente excluído com sucesso!");
-
-  carregarClientes();
+  alert("Cliente excluído com sucesso");
 }
 
  
 
-async function editarCliente(nomeCliente){
-
-  let cliente = clientes.find(c => c.nome === nomeCliente);
-
-  if(!cliente){
-    alert("Cliente não encontrado.");
-    return;
-  }
-
-  let novoNome = prompt("Nome:", cliente.nome);
-  if(!novoNome) return;
-
-  let novoTelefone = prompt("Telefone:", cliente.telefone || "");
-  let novoLimite = prompt("Limite:", cliente.limite);
-
-  novoLimite = parseFloat(novoLimite);
-
-  if(isNaN(novoLimite)){
-    alert("Limite inválido.");
-    return;
-  }
+async function editarCliente(clienteId, novoNome, novoTelefone, novoLimite){
 
   const { error } = await supabaseClient
     .from("clientes")
@@ -2249,7 +2190,7 @@ async function editarCliente(nomeCliente){
       telefone: novoTelefone,
       limite: novoLimite
     })
-    .eq("id", cliente.id);
+    .eq("id", clienteId);
 
   if(error){
     console.error(error);
@@ -2257,9 +2198,7 @@ async function editarCliente(nomeCliente){
     return;
   }
 
-  alert("Cliente atualizado com sucesso!");
-
-  carregarClientes();
+  alert("Cliente atualizado com sucesso");
 }
  
 
@@ -2288,6 +2227,92 @@ async function carregarClientes(){
 
 
 
+
+async function podeFinalizarVenda(clienteId, valorNovaVenda){
+
+  const saldoInfo = await calcularSaldoCliente(clienteId);
+  if(!saldoInfo) return false;
+
+  const { data: cliente } = await supabaseClient
+    .from("clientes")
+    .select("limite")
+    .eq("id", clienteId)
+    .single();
+
+  const novoSaldo = saldoInfo.saldo + valorNovaVenda;
+
+  if(novoSaldo > cliente.limite){
+    alert("Limite do cliente ultrapassado!");
+    return false;
+  }
+
+  return true;
+}
+
+
+
+
+async function carregarExtratoCompleto(clienteId){
+
+  const { data: vendas } = await supabaseClient
+    .from("vendas")
+    .select("id, total, criado_em")
+    .eq("cliente_id", clienteId);
+
+  const { data: pagamentos } = await supabaseClient
+    .from("pagamentos")
+    .select("valor, criado_em")
+    .eq("cliente_id", clienteId);
+
+  const extrato = [
+    ...vendas.map(v => ({ tipo: "Venda", valor: v.total, data: v.criado_em })),
+    ...pagamentos.map(p => ({ tipo: "Pagamento", valor: -p.valor, data: p.criado_em }))
+  ];
+
+  extrato.sort((a,b) => new Date(a.data) - new Date(b.data));
+
+  console.log(extrato);
+}
+
+
+
+ 
+
+ async function calcularSaldoCliente(clienteId){
+
+  // TOTAL VENDAS
+  const { data: vendas, error: erroVendas } = await supabaseClient
+    .from("vendas")
+    .select("total")
+    .eq("cliente_id", clienteId);
+
+  if(erroVendas){
+    console.error(erroVendas);
+    return null;
+  }
+
+  // TOTAL PAGAMENTOS
+  const { data: pagamentos, error: erroPag } = await supabaseClient
+    .from("pagamentos")
+    .select("valor")
+    .eq("cliente_id", clienteId);
+
+  if(erroPag){
+    console.error(erroPag);
+    return null;
+  }
+
+  const totalVendas = vendas.reduce((soma, v) => soma + Number(v.total), 0);
+  const totalPagamentos = pagamentos.reduce((soma, p) => soma + Number(p.valor), 0);
+
+  const saldo = totalVendas - totalPagamentos;
+
+  return {
+    totalVendas,
+    totalPagamentos,
+    saldo
+  };
+}
  
 
  
@@ -2366,44 +2391,24 @@ w.print();
 }
 
 
-function verSaldoRapido(){
+async function verSaldoRapido() {
+  let cliente = clientes.find(c => c.nome === clienteNome.value);
+  if(!cliente) {
+    alert("Cliente não encontrado");
+    return;
+  }
 
-let nome = clienteNome.value.trim();
+  const saldoInfo = await calcularSaldoCliente(cliente.id);
 
-if(!nome){
-alert("Digite o nome do cliente.");
-return;
+  document.getElementById("totalCompras").innerText = saldoInfo.totalVendas.toFixed(2);
+  document.getElementById("totalPagamentos").innerText = saldoInfo.totalPagamentos.toFixed(2);
+  document.getElementById("saldoDevedor").innerText = saldoInfo.saldo.toFixed(2);
+
+  document.getElementById("infoCliente").style.display = "block";
+  document.getElementById("infoCliente").innerText = 
+    `Saldo Total: R$ ${saldoInfo.saldo.toFixed(2)} (Compras: R$ ${saldoInfo.totalVendas.toFixed(2)}, Pagamentos: R$ ${saldoInfo.totalPagamentos.toFixed(2)})`;
 }
-
-let cliente = clientes.find(c => c.nome.toLowerCase() === nome.toLowerCase());
-
-if(!cliente){
-alert("Cliente não encontrado.");
-return;
-}
-
-let disponivel = cliente.limite - cliente.saldo;
-
-let cor = disponivel <= 0 ? "#c62828" : "#1fa84f";
-
-infoCliente.innerHTML = `
-<div style="
-background:#111;
-padding:10px;
-border-radius:8px;
-border:1px solid #333;
-">
-<b>Saldo:</b> R$ ${cliente.saldo.toFixed(2)}<br>
-<b>Limite:</b> R$ ${cliente.limite.toFixed(2)}<br>
-<b style="color:${cor}">Disponível:</b> R$ ${disponivel.toFixed(2)}<br><br>
-<button class="btn-small red" onclick="fecharSaldo()">Fechar</button>
-</div>
-`;
-
-infoCliente.style.display = "block";
-
-}
-
+ 
 
 function fecharSaldo(){
 infoCliente.style.display = "none";
@@ -2777,6 +2782,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
