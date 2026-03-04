@@ -1391,32 +1391,53 @@ async function gerarOrcamento(){
   // ===============================
   // 🔥 SE ESTIVER EDITANDO
   // ===============================
-  if(orcamentoEmEdicaoId){
+  ifif(orcamentoEmEdicaoId){
 
+  const { data, error } = await supabaseClient
+    .from("vendas")
+    .select("*")
+    .eq("id", orcamentoEmEdicaoId)
+    .single();
 
-    if(error){
-      console.error(error);
-      alert("Erro ao atualizar orçamento!");
-      return;
-    }
+  if(error){
+    console.error(error);
+    alert("Erro ao buscar orçamento!");
+    return;
+  }
 
-    if(!data || data.length === 0){
-      alert("Orçamento não encontrado!");
-      return;
-    }
+  if(!data){
+    alert("Orçamento não encontrado!");
+    return;
+  }
 
-    numero = data[0].numero_orcamento;
-    orcamentoId = data[0].id;
+  numero = data.numero_orcamento;
+  orcamentoId = data.id;
 
-    // 🔥 apagar itens antigos
-    await supabaseClient
-      .from("itens_venda")
-      .delete()
-      .eq("venda_id", orcamentoId);
+  // 🔥 Atualiza o orçamento
+  const { error: erroUpdate } = await supabaseClient
+    .from("vendas")
+    .update({
+      forma_pagamento: pagamento,
+      subtotal: subtotal,
+      desconto: descontoAtual,
+      total: total
+    })
+    .eq("id", orcamentoId);
 
-    alert("Orçamento atualizado com sucesso!");
+  if(erroUpdate){
+    console.error(erroUpdate);
+    alert("Erro ao atualizar orçamento!");
+    return;
+  }
 
-  } 
+  // 🔥 apagar itens antigos
+  await supabaseClient
+    .from("itens_venda")
+    .delete()
+    .eq("venda_id", orcamentoId);
+
+  alert("Orçamento atualizado com sucesso!");
+}
   // ===============================
   // 🔥 NOVO ORÇAMENTO
   // ===============================
@@ -2883,5 +2904,6 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
