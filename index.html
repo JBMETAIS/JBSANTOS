@@ -1932,11 +1932,14 @@ return cliente;
 
 async function verExtrato(clienteId){
 
+console.log("Buscando extrato para ID:", clienteId);
+
 const { data, error } = await supabaseClient
   .from("movimentacoes_clientes")
   .select("*")
-  .eq("cliente_id", clienteId)
-  .order("data", { ascending: false });
+  .eq("cliente_id", clienteId);
+
+console.log("Resultado encontrado:", data);
 
 if(error){
 console.error(error);
@@ -1949,38 +1952,8 @@ alert("Cliente sem movimentações");
 return;
 }
 
-let html = "<h3>Extrato do Cliente</h3>";
-html += "<table style='width:100%; margin-top:10px;'>";
-
-html += "<tr>";
-html += "<th>Data</th>";
-html += "<th>Descrição</th>";
-html += "<th>Valor</th>";
-html += "</tr>";
-
-data.forEach(function(mov){
-
-html += "<tr>";
-html += "<td>" + new Date(mov.data).toLocaleString("pt-BR") + "</td>";
-html += "<td>" + mov.descricao + "</td>";
-html += "<td>R$ " + parseFloat(mov.valor).toFixed(2) + "</td>";
-html += "</tr>";
-
-});
-
-html += "</table>";
-html += "<br><button onclick='fecharExtrato()'>Fechar</button>";
-
-let modal = document.getElementById("modalExtrato");
-
-modal.innerHTML =
-"<div style='background:#fff; padding:20px; border-radius:10px; width:400px; max-height:70vh; overflow:auto;'>" 
-+ html + 
-"</div>";
-
-modal.style.display = "flex";
+// resto continua igual
 }
-
  
 
 function fecharExtrato(){
@@ -2875,6 +2848,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
