@@ -1052,11 +1052,15 @@ await carregarProdutos();
 atualizarProdutos();
 
 if(tipoOperacao === "VENDA"){
+
   imprimirCupom(total, "VENDA");
   alert("Venda finalizada!");
+
 } else {
 
-  gerarPDFOrcamento(total); // 👈 função separada
+  // 👇 aqui chama o A4 correto
+  imprimirOrcamentoA4(vendaCriada);
+
   alert("Orçamento gerado!");
 }
 
@@ -3135,6 +3139,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
