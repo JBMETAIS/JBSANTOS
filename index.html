@@ -1984,6 +1984,42 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnSalvar").addEventListener("click", salvarConfig);
 });
  
+
+
+
+window.salvarConfig = async function() {
+  const dados = {
+    nome: confNome.value,
+    cnpj: confCnpj.value,
+    endereco: confEndereco.value,
+    telefone: confTelefone.value
+  };
+
+  const { data: empresaExistente, error: err1 } = await supabaseClient
+    .from("empresa")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  if (err1) { console.error(err1); alert("Erro ao buscar empresa"); return; }
+
+  if (empresaExistente) {
+    const { error } = await supabaseClient
+      .from("empresa")
+      .update(dados)
+      .eq("id", empresaExistente.id);
+    if (error) { console.error(error); alert("Erro ao atualizar configuração"); return; }
+  } else {
+    const { error } = await supabaseClient
+      .from("empresa")
+      .insert([dados]);
+    if (error) { console.error(error); alert("Erro ao salvar configuração"); return; }
+  }
+
+  alert("Configuração salva no banco com sucesso!");
+}
+
+
  
 
 async function buscarOuCriarCliente(nome){
@@ -3040,6 +3076,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
