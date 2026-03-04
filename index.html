@@ -1988,7 +1988,7 @@ async function verExtrato(clienteId){
   // 🔹 BUSCAR PAGAMENTOS
   const { data: pagamentos, error: erroPag } = await supabaseClient
     .from("pagamentos")
-    .select("valor, created_at")
+   .select("valor, criado_em")
     .eq("cliente_id", clienteId);
 
   if(erroPag){
@@ -2010,7 +2010,7 @@ async function verExtrato(clienteId){
 
   pagamentos.forEach(p => {
     extrato.push({
-      data: p.created_at,
+      data: p.criado_em,
       descricao: "Pagamento",
       valor: -Number(p.valor)
     });
@@ -2258,7 +2258,6 @@ async function confirmarPagamento(){
   if(!cliente) return;
 
   let valor = parseFloat(document.getElementById("valorPagamento").value);
-  let forma = document.getElementById("formaPagamentoSelect").value;
 
   if(isNaN(valor) || valor <= 0){
     alert("Valor inválido.");
@@ -2270,22 +2269,22 @@ async function confirmarPagamento(){
     return;
   }
 
-  // 🔹 SALVAR PAGAMENTO NO BANCO
+  // 🔹 INSERE USANDO SUA ESTRUTURA REAL
   const { error } = await supabaseClient
     .from("pagamentos")
     .insert([{
-      cliente_id: cliente.id,
+     cliente_id: cliente.id, // porque sua coluna é TEXT
       valor: valor,
-      forma_pagamento: forma
+      criado_em: new Date().toISOString()
     }]);
 
   if(error){
     console.error(error);
-    alert("Erro ao registrar pagamento");
+    alert(error.message);
     return;
   }
 
-  // 🔹 ATUALIZAR SALDO NO BANCO
+  // 🔹 ATUALIZA SALDO NO BANCO
   const novoSaldo = cliente.saldo - valor;
 
   await supabaseClient
@@ -2298,7 +2297,6 @@ async function confirmarPagamento(){
   fecharModalPagamento();
   await carregarClientes();
 }
-
 
 
 function fecharModalPagamento(){
@@ -2935,6 +2933,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
