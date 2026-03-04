@@ -2180,7 +2180,6 @@ R$ ${disponivel.toFixed(2)}
 
 async function reimprimirUltimaVenda(clienteId){
 
-  // 🔎 Buscar última venda desse cliente
   const { data, error } = await supabaseClient
     .from("vendas")
     .select(`
@@ -2195,7 +2194,7 @@ async function reimprimirUltimaVenda(clienteId){
     `)
     .eq("cliente_id", clienteId)
     .eq("tipo", "VENDA")
-    .order("created_at", { ascending: false })
+    .order("created_at", { ascending: false }) // 🔥 AQUI
     .limit(1)
     .single();
 
@@ -2205,7 +2204,6 @@ async function reimprimirUltimaVenda(clienteId){
     return;
   }
 
-  // 🔥 Montar estrutura no formato do seu cupom
   let vendaFormatada = {
     cliente: data.cliente || "Consumidor",
     data: new Date(data.created_at).toLocaleString("pt-BR"),
@@ -2222,6 +2220,7 @@ async function reimprimirUltimaVenda(clienteId){
   reimprimirCupomVenda(vendaFormatada);
 }
 
+ 
 
 function novaVendaCliente(nomeCliente){
 
@@ -2995,4 +2994,5 @@ carregarClientes();
 
 </body>
 </html>
+
 
