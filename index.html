@@ -992,7 +992,7 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
     forma_pagamento: formaPagamento.value,
     subtotal: subtotal,
     desconto: descontoAtual,
-    total: total
+    total: total,
     tipo: "VENDA"
   }])
   .select()
@@ -2864,6 +2864,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
