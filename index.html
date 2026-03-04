@@ -2025,23 +2025,39 @@ async function verExtrato(clienteId){
 
   extrato.forEach(item => {
 
-    saldo += item.valor;
+  saldo += item.valor;
 
-    let cor = item.valor > 0 ? "#c62828" : "#1fa84f";
+  let cor = item.valor > 0 ? "#c62828" : "#1fa84f";
 
-    html += `
+  // 🔹 DEFINE TEXTO COM ÍCONE
+  let descricaoFormatada = "";
+
+  if(item.valor > 0){
+    descricaoFormatada = "🛒 Compra";
+  } else {
+    descricaoFormatada = "💰 Pagamento";
+  }
+
+  html += `
       <tr>
-        <td style="padding:8px;">${new Date(item.data).toLocaleString()}</td>
-        <td style="padding:8px;">${item.descricao}</td>
+        <td style="padding:8px;">
+          ${new Date(item.data).toLocaleString()}
+        </td>
+
+        <td style="padding:8px; font-weight:bold;">
+          ${descricaoFormatada}
+        </td>
+
         <td style="padding:8px; color:${cor}; font-weight:bold;">
           R$ ${item.valor.toFixed(2)}
         </td>
+
         <td style="padding:8px; font-weight:bold;">
           R$ ${saldo.toFixed(2)}
         </td>
       </tr>
     `;
-  });
+});
 
   document.getElementById("extratoNome").innerText = cliente.nome;
   document.getElementById("extratoSaldo").innerText = "R$ " + saldo.toFixed(2);
@@ -2933,6 +2949,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
