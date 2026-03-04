@@ -471,7 +471,7 @@ R$ <span id="total">0.00</span>
 <input id="confCnpj" placeholder="CNPJ">
 <input id="confEndereco" placeholder="Endereço">
 <input id="confTelefone" placeholder="Telefone">
-<button class="primary" onclick="salvarConfig()">Salvar</button>
+<button id="btnSalvar" class="primary">Salvar</button>
 </div>
 </section>
 
@@ -1981,7 +1981,10 @@ document.addEventListener("DOMContentLoaded", () => {
   carregarConfig();
 
   // Conecta botão ao salvarConfig
-  document.getElementById("btnSalvar").addEventListener("click", salvarConfig);
+  const btnSalvar = document.getElementById("btnSalvar");
+  if (btnSalvar) {
+    btnSalvar.addEventListener("click", salvarConfig);
+  }
 });
  
 
@@ -3076,6 +3079,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
