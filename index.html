@@ -1393,15 +1393,6 @@ async function gerarOrcamento(){
   // ===============================
   if(orcamentoEmEdicaoId){
 
-    const { data, error } = await supabaseClient
-      .from("vendas")
-      .update({
-        subtotal: subtotal,
-        desconto: descontoAtual,
-        total: total
-      })
-      .eq("id", orcamentoEmEdicaoId)
-      .select();
 
     if(error){
       console.error(error);
@@ -2892,4 +2883,5 @@ carregarClientes();
 
 </body>
 </html>
+
 
