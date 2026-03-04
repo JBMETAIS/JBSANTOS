@@ -1904,44 +1904,37 @@ await carregarHistoricoDoBanco();
 
 
 
-async function salvarConfig(){
-
+async function salvarConfig() {
   const config = {
     nome: confNome.value,
     cnpj: confCnpj.value,
-    endereço: confEndereco.value, // ⚠️ sua coluna tem acento
+    endereco: confEndereco.value, // agora sem acento
     telefone: confTelefone.value
   };
 
-  // Verifica se já existe empresa cadastrada
   const { data: empresaExistente } = await supabaseClient
     .from("empresa")
     .select("*")
     .limit(1)
     .maybeSingle();
 
-  if(empresaExistente){
-
-    // 🔁 Atualiza
+  if (empresaExistente) {
     const { error } = await supabaseClient
       .from("empresa")
       .update(config)
       .eq("id", empresaExistente.id);
 
-    if(error){
+    if (error) {
       console.error(error);
       alert("Erro ao atualizar configuração");
       return;
     }
-
   } else {
-
-    // ➕ Insere
     const { error } = await supabaseClient
       .from("empresa")
       .insert([config]);
 
-    if(error){
+    if (error) {
       console.error(error);
       alert("Erro ao salvar configuração");
       return;
@@ -1950,37 +1943,24 @@ async function salvarConfig(){
 
   alert("Configuração salva no banco com sucesso!");
 }
- let config = {};
 
-// Declaração da função
 async function carregarConfig() {
-  try {
-    const { data, error } = await supabaseClient
-      .from("empresa")
-      .select("*")
-      .limit(1)
-      .maybeSingle();
+  const { data } = await supabaseClient
+    .from("empresa")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
 
-    if (error) {
-      console.error("Erro ao buscar configuração:", error);
-      return;
-    }
+  if (data) {
+    config = data;
 
-    if (data) {
-      config = data;
-
-      // Preenche os inputs somente se eles existirem
-      if (confNome) confNome.value = data.nome || "";
-      if (confCnpj) confCnpj.value = data.cnpj || "";
-      if (confEndereco) confEndereco.value = data.endereço || "";
-      if (confTelefone) confTelefone.value = data.telefone || "";
-    }
-  } catch (err) {
-    console.error("Erro inesperado:", err);
+    confNome.value = data.nome || "";
+    confCnpj.value = data.cnpj || "";
+    confEndereco.value = data.endereco || ""; // sem acento
+    confTelefone.value = data.telefone || "";
   }
 }
 
-// ⚠️ Garante que só vai rodar depois que o DOM estiver pronto
 document.addEventListener("DOMContentLoaded", () => {
   carregarConfig();
 });
@@ -3039,6 +3019,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
