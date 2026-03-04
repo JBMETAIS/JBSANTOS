@@ -1539,7 +1539,11 @@ async function gerarOrcamento(){
 
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
-let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
+let numeroFormatado = String(orc.numero_orcamento || 0).padStart(4,'0');
+
+let dataFormatada = orc.criado_em 
+  ? new Date(orc.criado_em).toLocaleDateString("pt-BR")
+  : new Date().toLocaleDateString("pt-BR");
 
 let w = window.open("", "", "width=900,height=700");
 
@@ -1627,7 +1631,7 @@ font-weight:bold;
 <div class="titulo">
 <h2>ORÇAMENTO</h2>
 Nº ${numeroFormatado}
-Data: ${orc.data}
+Data: ${dataFormatada}
 </div>
 </div>
 
@@ -1638,7 +1642,7 @@ ${empresa.telefone || ""}
 </div>
 
 <div class="info">
-<b>Cliente:</b> ${orc.cliente}
+<b>Cliente:</b> ${orc.nome_do_cliente || "Consumidor"}
 </div>
 
 <table>
@@ -1670,11 +1674,7 @@ html += `
 <div class="footer">
 
 <div class="pagamento">
-<b>Forma de pagamento:</b> ${orc.pagamento}<br>
-${orc.pagamento === "cartao" ? `
-<b>Parcelas:</b> ${orc.parcelas}x<br>
-<b>Valor por parcela:</b> ${orc.valorParcela}
-` : ""}
+<b>Forma de pagamento:</b> ${orc.forma_pagamento || "Não informado"}
 </div>
 
 <div class="total">
@@ -1696,7 +1696,6 @@ w.document.write(html);
 w.document.close();
 w.print();
 }
-
 
 
 
@@ -3149,6 +3148,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
