@@ -518,6 +518,7 @@ let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
 let orcamentoEmEdicaoId = null;
+let clienteEditandoId = null;
 
 let carrinho=[];
 let descontoAtual=0;
@@ -2153,7 +2154,7 @@ R$ ${disponivel.toFixed(2)}
 </div>
 
 <div class="tooltip">
-<button class="btn-small" onclick="editarCliente('${c.nome}')">✏️</button>
+<button onclick="editarCliente('${cliente.id}')">Editar</button>
 <span class="tooltip-text">Editar Cliente</span>
 </div>
 
@@ -2168,7 +2169,7 @@ R$ ${disponivel.toFixed(2)}
 </div>
 
 <div class="tooltip">
-<button class="btn-small red" onclick="excluirCliente('${c.nome}')">🗑</button>
+<button onclick="excluirCliente('${cliente.id}')" style="background:#c62828;color:white;">Excluir</button>
 <span class="tooltip-text">Excluir Cliente</span>
 </div>
 
@@ -2325,7 +2326,8 @@ clientePagamentoAtual = null;
 
 async function excluirCliente(clienteId){
 
-  if(!confirm("Deseja realmente excluir este cliente?")) return;
+  const confirmar = confirm("Tem certeza que deseja excluir este cliente?");
+  if(!confirmar) return;
 
   const { error } = await supabaseClient
     .from("clientes")
@@ -2333,38 +2335,97 @@ async function excluirCliente(clienteId){
     .eq("id", clienteId);
 
   if(error){
-    console.error(error);
-    alert("Erro ao excluir cliente");
+    alert(error.message);
     return;
   }
 
-  alert("Cliente excluído com sucesso");
+  alert("Cliente excluído com sucesso!");
+  carregarClientes();
 }
 
 
 
-async function editarCliente(clienteId, novoNome, novoTelefone, novoLimite){
+function editarCliente(clienteId){
 
-  const { error } = await supabaseClient
-    .from("clientes")
-    .update({
-      nome: novoNome,
-      telefone: novoTelefone,
-      limite: novoLimite
-    })
-    .eq("id", clienteId);
-
-  if(error){
-    console.error(error);
-    alert("Erro ao atualizar cliente");
+  const cliente = clientes.find(c => c.id == clienteId);
+  if(!cliente){
+    alert("Cliente não encontrado");
     return;
   }
 
-  alert("Cliente atualizado com sucesso");
+  clienteEditandoId = cliente.id;
+
+  document.getElementById("nomeCliente").value = cliente.nome;
+  document.getElementById("telefoneCliente").value = cliente.telefone || "";
+  document.getElementById("limiteCliente").value = cliente.limite || "";
+
+  document.getElementById("modalCliente").style.display = "flex";
 }
 
 
 
+
+ async function salvarCliente(){
+
+  let nome = document.getElementById("nomeCliente").value.trim();
+  let telefone = document.getElementById("telefoneCliente").value.trim();
+  let limite = parseFloat(document.getElementById("limiteCliente").value) || 0;
+
+  if(!nome){
+    alert("Informe o nome do cliente");
+    return;
+  }
+
+  // 🔹 SE ESTIVER EDITANDO
+  if(clienteEditandoId){
+
+    const { error } = await supabaseClient
+      .from("clientes")
+      .update({
+        nome: nome,
+        telefone: telefone,
+        limite: limite
+      })
+      .eq("id", clienteEditandoId);
+
+    if(error){
+      alert(error.message);
+      return;
+    }
+
+    alert("Cliente atualizado com sucesso!");
+    clienteEditandoId = null;
+
+  } else {
+
+    // 🔹 NOVO CLIENTE
+    const { error } = await supabaseClient
+      .from("clientes")
+      .insert([{
+        nome: nome,
+        telefone: telefone,
+        limite: limite,
+        saldo: 0
+      }]);
+
+    if(error){
+      alert(error.message);
+      return;
+    }
+
+    alert("Cliente cadastrado com sucesso!");
+  }
+
+  fecharModalCliente();
+  carregarClientes();
+}
+
+
+
+
+
+
+ 
 
 async function carregarClientes(){
 
@@ -2949,6 +3010,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
