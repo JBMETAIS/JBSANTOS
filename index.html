@@ -1904,24 +1904,36 @@ await carregarHistoricoDoBanco();
 
 
 
+// ✅ variável global, apenas uma vez
+let config = {};
+
 async function salvarConfig() {
-  const config = {
+  // apenas atribuição local, sem conflito com a global
+  const novaConfig = {
     nome: confNome.value,
     cnpj: confCnpj.value,
-    endereco: confEndereco.value, // agora sem acento
+    endereco: confEndereco.value, // sem acento
     telefone: confTelefone.value
   };
 
-  const { data: empresaExistente } = await supabaseClient
+  // verifica se já existe empresa cadastrada
+  const { data: empresaExistente, error: fetchError } = await supabaseClient
     .from("empresa")
     .select("*")
     .limit(1)
     .maybeSingle();
 
+  if (fetchError) {
+    console.error(fetchError);
+    alert("Erro ao buscar dados da empresa");
+    return;
+  }
+
   if (empresaExistente) {
+    // 🔁 Atualiza
     const { error } = await supabaseClient
       .from("empresa")
-      .update(config)
+      .update(novaConfig)
       .eq("id", empresaExistente.id);
 
     if (error) {
@@ -1930,9 +1942,10 @@ async function salvarConfig() {
       return;
     }
   } else {
+    // ➕ Insere
     const { error } = await supabaseClient
       .from("empresa")
-      .insert([config]);
+      .insert([novaConfig]);
 
     if (error) {
       console.error(error);
@@ -1942,28 +1955,38 @@ async function salvarConfig() {
   }
 
   alert("Configuração salva no banco com sucesso!");
+  // atualiza a variável global
+  config = novaConfig;
 }
 
 async function carregarConfig() {
-  const { data } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from("empresa")
     .select("*")
     .limit(1)
     .maybeSingle();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   if (data) {
     config = data;
 
     confNome.value = data.nome || "";
     confCnpj.value = data.cnpj || "";
-    confEndereco.value = data.endereco || ""; // sem acento
+    confEndereco.value = data.endereco || "";
     confTelefone.value = data.telefone || "";
   }
 }
 
+// ⚡️ garante que os campos só sejam carregados depois que o DOM estiver pronto
 document.addEventListener("DOMContentLoaded", () => {
   carregarConfig();
 });
+
+ 
 
 async function buscarOuCriarCliente(nome){
 
@@ -3019,6 +3042,7 @@ carregarClientes();
 
 </body>
 </html>
+
 
 
 
