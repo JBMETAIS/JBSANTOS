@@ -526,6 +526,8 @@ let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
 let orcamentoEmEdicaoId = null;
+let orcamentoAtualId = null;
+let numeroOrcamentoAtual = null;
 
 let carrinho=[];
 let descontoAtual=0;
@@ -894,9 +896,16 @@ let numeroVenda = null;
 let numeroOrcamento = null;
 
 if(tipoOperacao === "VENDA"){
+
   numeroVenda = await gerarNumeroVenda();
+
 } else {
-  numeroOrcamento = await gerarNumeroOrcamento();
+
+  if(!numeroOrcamentoAtual){
+    numeroOrcamentoAtual = await gerarNumeroOrcamento();
+  }
+
+  numeroOrcamento = numeroOrcamentoAtual;
 }
 
 // ==================================================
@@ -989,12 +998,14 @@ if(tipoOperacao === "VENDA" && formaPagamento.value === "conta"){
 
   alert("Venda na conta realizada com sucesso!");
 
-  carrinho = [];
-  descontoAtual = 0;
-  atualizarCarrinho();
-  atualizarClientes();
+carrinho = [];
+descontoAtual = 0;
+numeroOrcamentoAtual = null;   // 👈 AQUI TAMBÉM
+orcamentoAtualId = null;       // 👈 AQUI TAMBÉM
+atualizarCarrinho();
+atualizarClientes();
 
-  return;
+return;
 }
 
 // ==================================================
@@ -1079,10 +1090,11 @@ if(tipoOperacao === "VENDA"){
 // 🔥 LIMPA SÓ DEPOIS DE IMPRIMIR
 carrinho = [];
 descontoAtual = 0;
+numeroOrcamentoAtual = null;   // 👈 AQUI
+orcamentoAtualId = null;       // 👈 AQUI
 atualizarCarrinho();
 await carregarProdutos();
 await carregarHistoricoDoBanco();
-}
 
  
 function imprimirCupom(total, tipo="VENDA", dadosVenda=null){
@@ -3148,6 +3160,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
