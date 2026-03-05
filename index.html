@@ -478,7 +478,7 @@ R$ <span id="total">0.00</span>
 <div class="card">
 <input id="confNome" placeholder="Nome da Empresa">
 <input id="confCnpj" placeholder="CNPJ">
-<input id="confEndereco" placeholder="Endereço">
+<input id="confEndereco" placeholder="Endereco">
 <input id="confTelefone" placeholder="Telefone">
 <button id="btnSalvar" class="primary">Salvar</button>
 </div>
@@ -1918,41 +1918,6 @@ await carregarHistoricoDoBanco();
 
 
 
-
-
-window.salvarConfig = async function() {
-  const dados = {
-    nome: confNome.value,
-    cnpj: confCnpj.value,
-    endereco: confEndereco.value,
-    telefone: confTelefone.value
-  };
-
-  const { data: empresaExistente, error: err1 } = await supabaseClient
-    .from("empresa")
-    .select("*")
-    .limit(1)
-    .maybeSingle();
-
-  if (err1) { console.error(err1); alert("Erro ao buscar empresa"); return; }
-
-  if (empresaExistente) {
-    const { error } = await supabaseClient
-      .from("empresa")
-      .update(dados)
-      .eq("id", empresaExistente.id);
-    if (error) { console.error(error); alert("Erro ao atualizar configuração"); return; }
-  } else {
-    const { error } = await supabaseClient
-      .from("empresa")
-      .insert([dados]);
-    if (error) { console.error(error); alert("Erro ao salvar configuração"); return; }
-  }
-
-  alert("Configuração salva no banco com sucesso!");
-}
-
-
  
 
 async function buscarOuCriarCliente(nome){
@@ -2581,7 +2546,7 @@ function reimprimirCupomVenda(venda){
         <div class="center">
          <h3>${config.nome || "JBSANTOS"}</h3>
 CNPJ: ${config.cnpj || ""}<br>
-${config.endereço || ""}<br>
+${config.endereco || ""}<br>
 Tel: ${config.telefone || ""}<br>
 <hr>
   `;
@@ -3142,3 +3107,4 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
