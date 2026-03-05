@@ -2493,6 +2493,27 @@ async function podeFinalizarVenda(clienteId, valorNovaVenda){
 
 
 
+ async function carregarExtratoCompleto(clienteId){
+
+  const { data: vendas } = await supabaseClient
+    .from("vendas")
+    .select("id, total, criado_em")
+
+  const { data: pagamentos } = await supabaseClient
+    .from("pagamentos")
+    .select("valor, criado_em")
+
+
+  const extrato = [
+    ...vendas.map(v => ({ tipo: "Venda", valor: v.total, data: v.criado_em })),
+    ...pagamentos.map(p => ({ tipo: "Pagamento", valor: -p.valor, data: p.criado_em }))
+  ];
+
+  extrato.sort((a,b) => new Date(a.data) - new Date(b.data));
+
+  console.log(extrato);
+}
+
 
 
 
