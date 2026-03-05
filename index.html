@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>SISTEMA JB Santos</title>
+<title>PDV JB Santos</title>
 <link rel="icon" type="image/png" href="iconejb.png">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -354,7 +354,7 @@ transform:scale(1.05);
 <div class="main">
 
 <section id="inicio">
-<h1>Bem-vindo ao Sistema JB SANTOS</h1>
+<h1>Bem-vindo ao Sistema JB Santos</h1>
 </section>
 
 <section id="produtos" style="display:none">
@@ -458,7 +458,7 @@ R$ <span id="total">0.00</span>
 <button class="big-btn red" style="background:#c62828" onclick="cancelarVenda()">
   CANCELAR VENDA
 </button>
- 
+
 </div>
 </div>
 </section>
@@ -478,7 +478,7 @@ R$ <span id="total">0.00</span>
 <div class="card">
 <input id="confNome" placeholder="Nome da Empresa">
 <input id="confCnpj" placeholder="CNPJ">
-<input id="confEndereco" placeholder="Endereco">
+<input id="confEndereco" placeholder="Endereço">
 <input id="confTelefone" placeholder="Telefone">
 <button id="btnSalvar" class="primary">Salvar</button>
 </div>
@@ -556,7 +556,18 @@ calcularTroco();
 
 
 
+function verificarFormaPagamento(){
 
+let pagamento = formaPagamento.value;
+
+if(pagamento === "cartao"){
+    divParcelas.style.display = "block";
+}
+else{
+    divParcelas.style.display = "none";
+}
+
+}
 
 
 function calcularTroco(){
@@ -863,7 +874,7 @@ atualizarCarrinho();
 }
 
 
-  
+
 
 async function finalizarVenda(tipoOperacao){
 
@@ -1000,7 +1011,7 @@ if(clienteNome && clienteNome.value){
   cliente = clientes.find(c => c.nome === clienteNome.value);
 }
 
- 
+
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
@@ -1073,7 +1084,7 @@ await carregarProdutos();
 await carregarHistoricoDoBanco();
 }
 
- 
+
 function imprimirCupom(total, tipo="VENDA", dadosVenda=null){
 
 let largura = 302;
@@ -1528,6 +1539,7 @@ async function gerarOrcamento(){
 
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
+let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
 let numeroFormatado = String(orc.numero_orcamento || 0).padStart(4,'0');
 
 let dataFormatada = orc.criado_em 
@@ -1620,6 +1632,7 @@ font-weight:bold;
 <div class="titulo">
 <h2>ORÇAMENTO</h2>
 Nº ${numeroFormatado}
+Data: ${orc.data}
 Data: ${dataFormatada}
 </div>
 </div>
@@ -1631,6 +1644,7 @@ ${empresa.telefone || ""}
 </div>
 
 <div class="info">
+<b>Cliente:</b> ${orc.cliente}
 <b>Cliente:</b> ${orc.nome_do_cliente || "Consumidor"}
 </div>
 
@@ -1663,6 +1677,11 @@ html += `
 <div class="footer">
 
 <div class="pagamento">
+<b>Forma de pagamento:</b> ${orc.pagamento}<br>
+${orc.pagamento === "cartao" ? `
+<b>Parcelas:</b> ${orc.parcelas}x<br>
+<b>Valor por parcela:</b> ${orc.valorParcela}
+` : ""}
 <b>Forma de pagamento:</b> ${orc.forma_pagamento || "Não informado"}
 </div>
 
@@ -1685,6 +1704,7 @@ w.document.write(html);
 w.document.close();
 w.print();
 }
+
 
 
 
@@ -1907,7 +1927,42 @@ await carregarHistoricoDoBanco();
 
 
 
- 
+
+
+window.salvarConfig = async function() {
+  const dados = {
+    nome: confNome.value,
+    cnpj: confCnpj.value,
+    endereco: confEndereco.value,
+    telefone: confTelefone.value
+  };
+
+  const { data: empresaExistente, error: err1 } = await supabaseClient
+    .from("empresa")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
+
+  if (err1) { console.error(err1); alert("Erro ao buscar empresa"); return; }
+
+  if (empresaExistente) {
+    const { error } = await supabaseClient
+      .from("empresa")
+      .update(dados)
+      .eq("id", empresaExistente.id);
+    if (error) { console.error(error); alert("Erro ao atualizar configuração"); return; }
+  } else {
+    const { error } = await supabaseClient
+      .from("empresa")
+      .insert([dados]);
+    if (error) { console.error(error); alert("Erro ao salvar configuração"); return; }
+  }
+
+  alert("Configuração salva no banco com sucesso!");
+}
+
+
+
 
 async function buscarOuCriarCliente(nome){
 
@@ -2211,7 +2266,7 @@ async function reimprimirUltimaVenda(clienteId){
   reimprimirCupomVenda(vendaFormatada);
 }
 
- 
+
 
 function novaVendaCliente(nomeCliente){
 
@@ -2222,7 +2277,7 @@ document.getElementById("abaVendas").click();
 clienteNome.value = nomeCliente;
 
 // já marca forma de pagamento como CONTA
-formaPagamento.value = "conta";
+formaPagamento.value = "CONTA";
 
 alert("Cliente selecionado para nova venda.");
 
@@ -2417,7 +2472,7 @@ async function carregarClientes(){
 
   clientes = data; // 🔥 usa saldo real do banco
 
- 
+
   atualizarClientes();
 }
 
@@ -2535,7 +2590,7 @@ function reimprimirCupomVenda(venda){
         <div class="center">
          <h3>${config.nome || "JBSANTOS"}</h3>
 CNPJ: ${config.cnpj || ""}<br>
-${config.endereco || ""}<br>
+${config.endereço || ""}<br>
 Tel: ${config.telefone || ""}<br>
 <hr>
   `;
@@ -2562,7 +2617,7 @@ Tel: ${config.telefone || ""}<br>
   janela.print();
 }
 
- 
+
 
 function verSaldoRapido() {
 
@@ -2881,7 +2936,7 @@ atualizarClientes();
 carregarClientes();
 };
 
-
+</script>
 
 
 <div id="modalPagamento" class="modal-overlay">
@@ -2898,7 +2953,7 @@ carregarClientes();
     <input type="number" id="valorPagamento">
 
     <label>Forma de Pagamento:</label>
-<select id="formaPagamentoSelect" onchange="verificarFormaPagamentoModal()">
+<select id="formaPagamentoSelect" onchange="verificarFormaPagamento()">
   <option value="Dinheiro">Dinheiro</option>
   <option value="PIX">PIX</option>
   <option value="Cartão Débito">Cartão Débito</option>
@@ -3089,14 +3144,16 @@ async function gerarNumeroOrcamento() {
 }
 
 
-  
+
+
+
+
+
+
+
 </script>
 
- 
+
 
 </body>
 </html>
-
-
-
-
