@@ -458,7 +458,7 @@ R$ <span id="total">0.00</span>
 <button class="big-btn red" style="background:#c62828" onclick="cancelarVenda()">
   CANCELAR VENDA
 </button>
-
+ 
 </div>
 </div>
 </section>
@@ -874,7 +874,7 @@ atualizarCarrinho();
 }
 
 
-
+  
 
 async function finalizarVenda(tipoOperacao){
 
@@ -923,7 +923,7 @@ if(tipoOperacao === "VENDA" && formaPagamento.value === "conta"){
     .insert([{
       numero_venda: numeroVenda,
       numero_orcamento: null,
-      cliente_id: cliente.id,
+      cliente_id: cliente ? cliente.id : null,
       forma_pagamento: "conta",
       subtotal: total,
       desconto: descontoAtual,
@@ -1005,16 +1005,25 @@ let subtotal = carrinho.reduce((acc, item) => {
   return acc + (item.preco * item.qtd);
 }, 0);
 
+let cliente = null;
+
+if(clienteNome && clienteNome.value){
+  cliente = clientes.find(c => c.nome === clienteNome.value);
+}
+
+ 
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
     numero_venda: numeroVenda,
     numero_orcamento: numeroOrcamento,
-    cliente_id: null,
-    forma_pagamento: tipoOperacao === "VENDA" ? formaPagamento.value : null,
-    subtotal: subtotal,
+    cliente_id: cliente ? cliente.id : null,
+    nome_do_cliente: clienteNome.value || "Consumidor",
+    telefone_do_cliente: "", // coloque seu input aqui se tiver
+    forma_pagamento: formaPagamento.value || "Não informado",
+    subtotal,
     desconto: descontoAtual,
-    total: total,
+    total,
     tipo: tipoOperacao
   }])
   .select()
@@ -1073,10 +1082,9 @@ descontoAtual = 0;
 atualizarCarrinho();
 await carregarProdutos();
 await carregarHistoricoDoBanco();
-
 }
 
-
+ 
 function imprimirCupom(total, tipo="VENDA", dadosVenda=null){
 
 let largura = 302;
@@ -1531,7 +1539,11 @@ async function gerarOrcamento(){
 
 let empresa = JSON.parse(localStorage.getItem("configJB")) || {};
 
-let numeroFormatado = String(orc.numero || 0).padStart(4,'0');
+let numeroFormatado = String(orc.numero_orcamento || 0).padStart(4,'0');
+
+let dataFormatada = orc.criado_em 
+  ? new Date(orc.criado_em).toLocaleDateString("pt-BR")
+  : new Date().toLocaleDateString("pt-BR");
 
 let w = window.open("", "", "width=900,height=700");
 
@@ -1619,7 +1631,7 @@ font-weight:bold;
 <div class="titulo">
 <h2>ORÇAMENTO</h2>
 Nº ${numeroFormatado}
-Data: ${orc.data}
+Data: ${dataFormatada}
 </div>
 </div>
 
@@ -1630,7 +1642,7 @@ ${empresa.telefone || ""}
 </div>
 
 <div class="info">
-<b>Cliente:</b> ${orc.cliente}
+<b>Cliente:</b> ${orc.nome_do_cliente || "Consumidor"}
 </div>
 
 <table>
@@ -1662,11 +1674,7 @@ html += `
 <div class="footer">
 
 <div class="pagamento">
-<b>Forma de pagamento:</b> ${orc.pagamento}<br>
-${orc.pagamento === "cartao" ? `
-<b>Parcelas:</b> ${orc.parcelas}x<br>
-<b>Valor por parcela:</b> ${orc.valorParcela}
-` : ""}
+<b>Forma de pagamento:</b> ${orc.forma_pagamento || "Não informado"}
 </div>
 
 <div class="total">
@@ -1688,7 +1696,6 @@ w.document.write(html);
 w.document.close();
 w.print();
 }
-
 
 
 
@@ -1946,7 +1953,7 @@ window.salvarConfig = async function() {
 }
 
 
-
+ 
 
 async function buscarOuCriarCliente(nome){
 
@@ -2250,7 +2257,7 @@ async function reimprimirUltimaVenda(clienteId){
   reimprimirCupomVenda(vendaFormatada);
 }
 
-
+ 
 
 function novaVendaCliente(nomeCliente){
 
@@ -2456,7 +2463,7 @@ async function carregarClientes(){
 
   clientes = data; // 🔥 usa saldo real do banco
 
-
+ 
   atualizarClientes();
 }
 
@@ -2601,7 +2608,7 @@ Tel: ${config.telefone || ""}<br>
   janela.print();
 }
 
-
+ 
 
 function verSaldoRapido() {
 
@@ -3129,15 +3136,15 @@ async function gerarNumeroOrcamento() {
 
 
 
+  
 
 
 
 
-
-
+  
 </script>
 
-
+ 
 
 </body>
 </html>
