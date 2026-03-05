@@ -2224,14 +2224,14 @@ async function reimprimirUltimaVenda(clienteId){
 
 function novaVendaCliente(nomeCliente){
 
-// muda para aba vendas
-document.getElementById("abaVendas").click();
+// muda para aba vendas corretamente
+show("pdv");
 
 // preenche nome automaticamente
 clienteNome.value = nomeCliente;
 
 // já marca forma de pagamento como CONTA
-formaPagamento.value = "CONTA";
+formaPagamento.value = "conta";
 
 alert("Cliente selecionado para nova venda.");
 
@@ -3104,6 +3104,7 @@ async function gerarNumeroOrcamento() {
 
 </body>
 </html>
+
 
 
 
