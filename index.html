@@ -1118,6 +1118,7 @@ let w = window.open("", "", `width=${largura},height=600`);
 
 let pagamento = dadosVenda ? dadosVenda.pagamento : formaPagamento.value;
 let parc = dadosVenda ? dadosVenda.parcelas : parcelas.value;
+let pedido = dadosVenda ? dadosVenda.numero_venda : "";
 let itens = [];
 
 if(dadosVenda){
@@ -1170,6 +1171,7 @@ ${config.telefone || ""}<br>
 <hr>
 
 Cliente: ${cliente || "Consumidor"}<br>
+Ped: ${pedido}<br>
 Data: ${dataVenda}<br>
 
 <hr>
@@ -1696,6 +1698,7 @@ const { data, error } = await supabaseClient
   .from("vendas")
   .select(`
     *,
+   numero_venda,
    itens_venda (
   quantidade,
   preco_unitario,
@@ -3044,6 +3047,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
