@@ -1612,10 +1612,24 @@ font-weight:bold;
 <div class="topo">
 <img src="logojb.png" class="logo">
 <div class="titulo">
-<h2>ORÇAMENTO</h2>
-Nº ${numeroFormatado}
-Data: ${orc.data}
+<h2 style="margin:0;">ORÇAMENTO</h2>
+
+<div style="font-size:14px;margin-top:5px;">
+<b>Nº:</b> ORC-${numeroFormatado}
 </div>
+
+<div style="font-size:14px;">
+<b>Data:</b> ${orc.data}
+</div>
+
+<div style="font-size:14px;">
+<b>Hora:</b> ${new Date().toLocaleTimeString()}
+</div>
+
+<div style="font-size:14px;">
+<b>Validade:</b> 7 dias
+</div>
+
 </div>
 
 <div style="font-size:13px;margin-bottom:10px;">
@@ -3086,6 +3100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
