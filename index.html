@@ -1386,6 +1386,7 @@ async function gerarOrcamento(){
 
   let orcamentoId;
   let numero;
+  let numeroFormatado;
 
   // ===============================
   // 🔥 SE ESTIVER EDITANDO
@@ -1410,8 +1411,10 @@ async function gerarOrcamento(){
   }
 
   numero = data.numero_orcamento;
-  let numeroFormatado = "ORC-" + String(numero).padStart(4,"0");
+  numeroFormatado = "ORC-" + String(numero).padStart(4,"0");
+  orcamentoId = data.id;
 
+   
   // 🔥 Atualiza o orçamento
   const { error: erroUpdate } = await supabaseClient
     .from("vendas")
@@ -1462,9 +1465,10 @@ async function gerarOrcamento(){
     }
 
     numero = data.numero_orcamento;
+    numeroFormatado = "ORC-" + String(numero).padStart(4,"0");
     orcamentoId = data.id;
 
-    alert("Orçamento salvo com sucesso!");
+    alert("Orçamento salvo com sucesso! Nº " + numeroFormatado);
   }
 
   // ===============================
@@ -1490,7 +1494,7 @@ async function gerarOrcamento(){
   // 🔥 IMPRESSÃO
   // ===============================
   let orcamentoTemp = {
-    numero: numero,
+    numero: numeroFormatado,
     data: new Date().toLocaleDateString(),
     total: total,
     tipo: "ORCAMENTO",
@@ -3082,5 +3086,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
