@@ -1378,9 +1378,10 @@ async function gerarOrcamento(){
 
   if(!confirm("Gerar orçamento?")) return;
 
-  let total = parseFloat(document.getElementById("total").innerText);
+  let total = parseFloat(document.getElementById("total").innerText) || 0;
   let subtotal = parseFloat(document.getElementById("subtotal").innerText);
   let cliente = clienteNome.value || "Consumidor";
+  let telefoneCliente = document.getElementById("telefoneCliente")?.value || "";
   let pagamento = formaPagamento.value || "Não informado";
   let qtdParcelas = pagamento === "cartao" ? parcelas.value : 1;
   let valorParc = valorParcela.value || "";
@@ -3118,6 +3119,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
