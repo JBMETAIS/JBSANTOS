@@ -1098,7 +1098,7 @@ for (let item of carrinho) {
 await carregarProdutos();
  atualizarProdutos();
 
-imprimirCupom(total,"VENDA");
+imprimirCupom(total,"VENDA", data);
 
 alert("Venda finalizada com sucesso!");
 
@@ -1136,7 +1136,7 @@ if(dadosVenda){
 }));
 }
 let cliente = dadosVenda ? dadosVenda.cliente : clienteNome.value;
-let numeroPedido = dadosVenda ? dadosVenda.numero_venda : "";
+let numeroPedido = dadosVenda?.numero_venda || "";
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 let valorRec = dadosVenda ? dadosVenda.valorRecebido : valorRecebido.value;
 let valorTroco = dadosVenda ? dadosVenda.troco : troco.value;
@@ -3046,4 +3046,5 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
