@@ -1098,7 +1098,7 @@ for (let item of carrinho) {
 await carregarProdutos();
  atualizarProdutos();
 
-imprimirCupom(total,"VENDA");
+imprimirCupom(total, "VENDA", vendaCriada);
 
 alert("Venda finalizada com sucesso!");
 
@@ -1118,7 +1118,7 @@ let w = window.open("", "", `width=${largura},height=600`);
 
 let pagamento = dadosVenda ? dadosVenda.pagamento : formaPagamento.value;
 let parc = dadosVenda ? dadosVenda.parcelas : parcelas.value;
-let pedido = dadosVenda ? dadosVenda.numero_venda : "";
+let pedido = dadosVenda ? dadosVenda.numero_venda : (vendaCriada?.numero_venda || "");
 let itens = [];
 
 if(dadosVenda){
@@ -3047,6 +3047,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
