@@ -395,6 +395,7 @@ transform:scale(1.05);
 
 <div style="display:flex; gap:5px;">
 <input id="clienteNome" placeholder="Nome do Cliente">
+<input type="text" id="telefoneCliente" placeholder="Telefone do cliente">
 <button class="btn-saldo" onclick="verSaldoRapido()">
 💳 Ver Saldo
 </button>
@@ -1386,6 +1387,9 @@ async function gerarOrcamento(){
   let subtotal = parseFloat(document.getElementById("subtotal").innerText);
   let cliente = clienteNome.value || "Consumidor";
   let telefoneCliente = document.getElementById("telefoneCliente")?.value || "";
+
+  console.log("Telefone digitado:", telefoneCliente);
+ 
   let pagamento = formaPagamento.value || "Não informado";
   let qtdParcelas = pagamento === "cartao" ? parcelas.value : 1;
   let valorParc = valorParcela.value || "";
@@ -3127,6 +3131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
