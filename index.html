@@ -2524,30 +2524,42 @@ Tel: ${config.telefone || ""}<br>
 
  
 
-function verSaldoRapido() {
+async function verSaldoRapido() {
 
-let cliente = clientes.find(c => c.nome === clienteNome.value);
+  let info = document.getElementById("infoCliente");
+  let clienteNome = document.getElementById("clienteNome").value;
 
-if(!cliente){
-alert("Cliente não encontrado");
-return;
-}
+  // 🔁 Se já estiver aberto, fecha
+  if (info.style.display === "block") {
+    info.style.display = "none";
+    return;
+  }
 
-let infoCliente = document.getElementById("infoCliente");
+  if (!clienteNome) {
+    alert("Digite o nome do cliente");
+    return;
+  }
 
-if(!infoCliente){
-alert("Elemento infoCliente não encontrado no HTML");
-return;
-}
+  const { data, error } = await supabase
+    .from("clientes")
+    .select("saldo, telefone")
+    .ilike("nome", clienteNome)
+    .limit(1)
+    .single();
 
-let disponivel = cliente.limite - cliente.saldo;
+  if (error || !data) {
+    info.style.display = "block";
+    info.innerHTML = "⚠️ Cliente não encontrado";
+    return;
+  }
 
-infoCliente.style.display = "block";
-infoCliente.innerHTML = `
-<b>Saldo Devedor:</b> R$ ${cliente.saldo.toFixed(2)}<br>
-<b>Limite:</b> R$ ${cliente.limite.toFixed(2)}<br>
-<b>Disponível:</b> R$ ${disponivel.toFixed(2)}
-`;
+  // 💰 mostrar saldo
+  info.style.display = "block";
+  info.innerHTML = `
+    👤 Cliente: <b>${clienteNome}</b><br>
+    📞 Telefone: ${data.telefone || "Não informado"}<br>
+    💰 Saldo: <b style="color:red">R$ ${Number(data.saldo || 0).toFixed(2)}</b>
+  `;
 }
 
 
@@ -3012,6 +3024,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
