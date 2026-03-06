@@ -913,6 +913,8 @@ if(!confirm("Confirmar finalização da venda?")){
 }
 
 let total=parseFloat(document.getElementById("total").innerText);
+let cliente = document.getElementById("clienteNome").value || "Consumidor";
+let telefoneCliente = document.getElementById("telefoneCliente")?.value || "";
 let vendaId = Date.now();
 
 
@@ -943,8 +945,8 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
     cliente_id: cliente.id,
-    nome_do_cliente: cliente,
-    telefone_do_cliente: telefoneCliente,e,
+    nome_do_cliente: cliente.nome,
+    telefone_do_cliente: telefoneCliente,
     forma_pagamento: "conta",
     subtotal: total,
     desconto: descontoAtual,
@@ -1033,6 +1035,7 @@ return;
 // ============================
 
 // 1️⃣ Calcular subtotal
+ 
 let subtotal = carrinho.reduce((acc, item) => {
   return acc + (item.preco * item.qtd);
 }, 0);
@@ -3172,6 +3175,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
