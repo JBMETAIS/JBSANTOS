@@ -2676,14 +2676,18 @@ alert("Venda cancelada com sucesso!");
 
 
 function converterOrcamento(index){
+
   console.log("Index clicado:", index);
 
-  // 🔄 pega o objeto atualizado do array
   let orc = vendas[index];
 
-  // verifica se existe e se ainda é orçamento
-  if(!orc || orc.numero_orcamento === null){
-    alert("Este orçamento não pode mais ser convertido.");
+  if(!orc){
+    alert("Orçamento não encontrado.");
+    return;
+  }
+
+  if(orc.tipo?.toUpperCase() !== "ORCAMENTO"){
+    alert("Este registro não é um orçamento.");
     return;
   }
 
@@ -2691,9 +2695,9 @@ function converterOrcamento(index){
 
   orcamentoEmEdicaoId = orc.id;
 
-  // carrega itens no carrinho
   carrinho = orc.itens.map(item => {
     let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
+
     return {
       index: indexProduto,
       nome: item.nome,
