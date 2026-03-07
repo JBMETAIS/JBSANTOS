@@ -1865,7 +1865,7 @@ ${v.tipo === "PAGAMENTO" ? `
 
 
 <div class="tooltip">
-<button class="btn-small red" onclick="excluirVenda(${index})">🗑</button>
+<button class="btn-small red" onclick="excluirVenda(${v.id})">🗑</button>
 <span class="tooltip-text">Excluir</span>
 </div>
 
@@ -1877,16 +1877,14 @@ ${v.tipo === "PAGAMENTO" ? `
 }
 
 
-async function excluirVenda(index){
+async function excluirVenda(id){
 
 if(!confirm("Deseja realmente excluir esta venda do histórico?")) return;
-
-let venda = vendas[index];
 
 const { error } = await supabaseClient
   .from("vendas")
   .delete()
-  .eq("id", venda.id);
+  .eq("id", id);
 
 if(error){
   console.error(error);
@@ -1898,7 +1896,6 @@ alert("Venda excluída com sucesso!");
 
 await carregarHistoricoDoBanco();
 }
-
 
 
 
@@ -3045,6 +3042,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
