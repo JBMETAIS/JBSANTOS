@@ -1274,7 +1274,7 @@ imprimirCupom(venda.total, "REIMPRESSÃO", venda);
 
 function reimprimirOrcamento(id){
 
-let orc = vendas.find(v => v.id === id);
+let orc = vendas.find(v => String(v.id) === String(id));
 
 if(!orc){
 alert("Orçamento não encontrado");
@@ -1836,7 +1836,7 @@ ${v.tipo === "VENDA" ? `
 
 ${v.tipo === "ORCAMENTO" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirOrcamento(${v.id})">🖨</button>
+<button class="btn-small" onclick="reimprimirOrcamento(${v.id}')">🖨</button>
 <span class="tooltip-text">Reimprimir Orçamento</span>
 </div>
 ` : ""}
@@ -3045,6 +3045,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
