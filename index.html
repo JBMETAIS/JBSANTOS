@@ -1879,18 +1879,34 @@ ${v.tipo === "PAGAMENTO" ? `
 
 async function excluirVenda(id){
 
-  await supabase
+  if(!confirm("Deseja realmente excluir esta venda?")) return;
+
+  const { error: erroItens } = await supabaseClient
     .from("itens_venda")
     .delete()
     .eq("venda_id", id);
 
-  await supabase
+  if(erroItens){
+    console.error(erroItens);
+    alert("Erro ao excluir itens da venda");
+    return;
+  }
+
+  const { error: erroVenda } = await supabaseClient
     .from("vendas")
     .delete()
     .eq("id", id);
 
-}
+  if(erroVenda){
+    console.error(erroVenda);
+    alert("Erro ao excluir venda");
+    return;
+  }
 
+  alert("Venda excluída com sucesso!");
+
+  carregarHistoricoDoBanco();
+}
 
 
 window.salvarConfig = async function() {
@@ -3035,6 +3051,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
