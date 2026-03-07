@@ -1274,7 +1274,6 @@ imprimirOrcamentoA4(orc);
 
 
 
-
 function obterNumeroOrcamento(){
 let numero = localStorage.getItem("orcamentoJB") || 1;
 localStorage.setItem("orcamentoJB", parseInt(numero)+1);
@@ -1582,7 +1581,7 @@ ORÇAMENTO
 
 
 <div class="info">
-<b>Cliente:</b> ${orc.cliente || "Consumidor"}<br>
+<b>Cliente:</b> ${orc.cliente || orc.cliente_nome || "Consumidor"}<br>
 ${orc.telefone ? `<b>Telefone:</b> ${orc.telefone}` : ""}
 </div>
 
@@ -1615,8 +1614,8 @@ html += `
 <div class="footer">
 
 <div class="pagamento">
-<b>Forma de pagamento:</b> ${orc.pagamento}<br>
-${orc.pagamento === "cartao" ? `
+<b>Forma de pagamento:</b> ${orc.pagamento || orc.forma_pagamento || ""}<br>
+${(orc.pagamento || orc.forma_pagamento) === "cartao" ? `
 <b>Parcelas:</b> ${orc.parcelas}x<br>
 <b>Valor por parcela:</b> ${orc.valorParcela}
 ` : ""}
@@ -3026,6 +3025,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
