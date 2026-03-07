@@ -1457,6 +1457,9 @@ const { data: empresa } = await supabaseClient
 
 const emp = empresa || {};
 
+let cliente = orc.cliente || orc.cliente_nome || "Consumidor";
+let pagamento = orc.pagamento || orc.forma_pagamento || orc.tipo_pagamento || "";
+
 let numeroFormatado = String(orc.numero || "").replace("ORC-","");
 numeroFormatado = numeroFormatado.padStart(4,'0');
 
@@ -1581,7 +1584,7 @@ ORÇAMENTO
 
 
 <div class="info">
-<b>Cliente:</b> ${orc.cliente || orc.cliente_nome || "Consumidor"}<br>
+<b>Cliente:</b> ${cliente}<br>
 ${orc.telefone ? `<b>Telefone:</b> ${orc.telefone}` : ""}
 </div>
 
@@ -1614,8 +1617,8 @@ html += `
 <div class="footer">
 
 <div class="pagamento">
-<b>Forma de pagamento:</b> ${orc.pagamento || orc.forma_pagamento || ""}<br>
-${(orc.pagamento || orc.forma_pagamento) === "cartao" ? `
+<b>Forma de pagamento:</b> ${pagamento}<br>
+${pagamento === "cartao" ? `
 <b>Parcelas:</b> ${orc.parcelas}x<br>
 <b>Valor por parcela:</b> ${orc.valorParcela}
 ` : ""}
@@ -3025,6 +3028,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
