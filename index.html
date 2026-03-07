@@ -461,14 +461,8 @@ R$ <span id="total">0.00</span>
 <input 
 id="pesquisaEstoque"
 placeholder="Pesquisar produto ou código..."
-style="
-width:100%;
-padding:10px;
-margin:10px 0 20px 0;
-border-radius:6px;
-border:1px solid #ccc;
-font-size:16px;"
 oninput="atualizarEstoque()"
+style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px solid #ccc;"
 >
 
 <table id="tEstoque"></table>
@@ -793,7 +787,7 @@ produtos.forEach((p,index)=>{
 t.innerHTML += `
 <tr>
 <td>${p.produto}</td>
-<td>${p.codigo}</td>
+<td>${p.codigo ? p.codigo : "-"}</td>
 <td>R$ ${Number(p.venda).toFixed(2)}</td>
 <td>${p.quantidade}</td>
 <td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
@@ -1723,7 +1717,7 @@ let bolinha = baixo
 
 tabela.innerHTML += `
 <tr>
-<td>${p.codigo || "-"}</td>
+<td>${p.codigo ? p.codigo : "-"}</td>
 <td>${p.produto}</td>
 <td style="text-align:center;">${p.quantidade}</td>
 <td style="text-align:center;color:${cor};font-weight:bold;">${status}</td>
@@ -3051,6 +3045,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
