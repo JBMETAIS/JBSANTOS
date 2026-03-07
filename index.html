@@ -1755,6 +1755,7 @@ vendas = data.map(v => ({
 
   id: v.id,
  numero_venda: v.numero_venda,
+ numero_orcamento: v.numero_orcamento,
 
   created_at: v.created_at, // importante
 
@@ -1821,7 +1822,7 @@ ${valorFormatado}
 
 ${v.tipo === "VENDA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirOrcamento(${v.id})">🖨</button>
+<button class="btn-small" onclick="reimprimirVenda(${v.id})">🖨</button>
 <span class="tooltip-text">Reimprimir Venda</span>
 </div>
 ` : ""}
@@ -3047,6 +3048,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
