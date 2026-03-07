@@ -1829,14 +1829,14 @@ ${valorFormatado}
 
 ${v.tipo === "VENDA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirVenda(${v.id})">🖨</button>
+<button class="btn-small" onclick="reimprimirVenda('${v.id}')">🖨</button>
 <span class="tooltip-text">Reimprimir Venda</span>
 </div>
 ` : ""}
 
 ${v.tipo === "ORCAMENTO" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirOrcamento(${v.id})">🖨</button>
+<button class="btn-small" onclick="reimprimirOrcamento('${v.id}')">🖨</button>
 <span class="tooltip-text">Reimprimir Orçamento</span>
 </div>
 ` : ""}
@@ -3051,6 +3051,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
