@@ -1685,47 +1685,45 @@ w.onload = function(){
 
 let tEstoque;
 
-window.onload = function(){
 
-tEstoque = document.getElementById("tEstoque");
-
-atualizarEstoque();
-
-}
 
 function atualizarEstoque(){
 
-const t = document.getElementById("tEstoque");
+const tabela = document.getElementById("tEstoque");
 
-t.innerHTML = `
+if(!tabela) return;
+
+tabela.innerHTML = `
 <tr>
 <th>Código</th>
 <th>Produto</th>
 <th>Qtd</th>
 <th>Status</th>
 <th>Alarme</th>
-</tr>`;
+</tr>
+`;
 
 produtos.forEach(p=>{
 
-let baixo = p.quantidade <= p.minimo;
+let baixo = Number(p.quantidade) <= Number(p.minimo);
 
 let status = baixo ? "BAIXO" : "OK";
 
 let cor = baixo ? "#c62828" : "#1fa84f";
 
 let bolinha = baixo
-? `<span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:#c62828;"></span>`
-: `<span style="display:inline-block;width:20px;height:20px;border-radius:50%;background:#1fa84f;"></span>`;
+? `<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:#c62828;"></span>`
+: `<span style="display:inline-block;width:18px;height:18px;border-radius:50%;background:#1fa84f;"></span>`;
 
-t.innerHTML += `
+tabela.innerHTML += `
 <tr>
-<td>${p.codigo}</td>
+<td>${p.codigo || "-"}</td>
 <td>${p.produto}</td>
 <td style="text-align:center;">${p.quantidade}</td>
 <td style="text-align:center;color:${cor};font-weight:bold;">${status}</td>
 <td style="text-align:center;">${bolinha}</td>
-</tr>`;
+</tr>
+`;
 
 });
 
@@ -2865,25 +2863,15 @@ document.addEventListener("change", function(e){
 
 
 
-async function testarSupabase() {
-  const { data, error } = await supabaseClient
-    .from("produtos")
-    .select("*");
-
-  console.log("DADOS DO SUPABASE:", data);
-  console.log("ERRO:", error);
-}
-
-testarSupabase();
-
-
-
-
 window.onload=function(){
 carregarProdutos(); // 🔥 agora vem da nuvem
 preencherParcelas();
 atualizarClientes();
 carregarClientes();
+
+tEstoque = document.getElementById("tEstoque");
+atualizarEstoque();
+ 
 };
 
 </script>
@@ -3057,6 +3045,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
