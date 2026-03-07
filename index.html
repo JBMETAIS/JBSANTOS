@@ -1845,7 +1845,9 @@ ${v.tipo === "ORCAMENTO" ? `
 
 ${v.tipo === "ORCAMENTO" ? `
 <div class="tooltip">
-<button class="btn-small green" onclick="converterOrcamento(${index})">💰</button>
+<button class="btn-small green" onclick="converterOrcamento(${index})">
+  💰 (${v.tipo})
+</button>
 <span class="tooltip-text">Converter em venda</span>
 </div>
 ` : ""}
@@ -3085,6 +3087,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
