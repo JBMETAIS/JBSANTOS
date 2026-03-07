@@ -457,6 +457,14 @@ R$ <span id="total">0.00</span>
 
 <section id="estoque" style="display:none">
 <h1>Estoque</h1>
+
+<input 
+type="text" 
+id="pesquisaEstoque"
+placeholder="🔎 Pesquisar produto ou código"
+oninput="filtrarEstoque()"
+style="margin-bottom:10px;padding:10px;width:300px">
+
 <table id="tEstoque"></table>
 </section>
 
@@ -1673,15 +1681,23 @@ w.onload = function(){
 
 function atualizarEstoque(){
 
+let filtro = document.getElementById("pesquisaEstoque")?.value?.toLowerCase() || "";
+
 tEstoque.innerHTML=`
 <tr>
-<th style="width:50%;">Produto</th>
+<th style="width:15%;">Código</th>
+<th style="width:40%;">Produto</th>
 <th style="width:15%; text-align:center;">Qtd</th>
-<th style="width:20%; text-align:center;">Status</th>
+<th style="width:15%; text-align:center;">Status</th>
 <th style="width:15%; text-align:center;">Alarme</th>
 </tr>`;
 
-produtos.forEach(p=>{
+produtos
+.filter(p => 
+  p.produto.toLowerCase().includes(filtro) ||
+  p.codigo.toLowerCase().includes(filtro)
+)
+.forEach(p=>{
 
 let baixo = p.quantidade <= p.min;
 
@@ -1707,6 +1723,9 @@ background:#1fa84f;
 
 tEstoque.innerHTML+=`
 <tr>
+
+<td>${p.codigo}</td>
+
 <td>${p.produto}</td>
 
 <td style="text-align:center;">
@@ -1726,6 +1745,10 @@ ${bolinha}
 
 }
 
+
+ function filtrarEstoque(){
+atualizarEstoque();
+}
 
 
 async function carregarHistoricoDoBanco(){
@@ -3048,6 +3071,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
