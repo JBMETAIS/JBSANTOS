@@ -1879,21 +1879,15 @@ ${v.tipo === "PAGAMENTO" ? `
 
 async function excluirVenda(id){
 
-if(!confirm("Deseja realmente excluir esta venda do histórico?")) return;
+  await supabase
+    .from("itens_venda")
+    .delete()
+    .eq("venda_id", id);
 
-const { error } = await supabaseClient
-  .from("vendas")
-  .delete()
-  .eq("id", id);
-
-if(error){
-  console.error(error);
-  alert("Erro ao excluir venda!");
-  return;
-}
-
-alert("Venda excluída com sucesso!");
-await carregarHistoricoDoBanco();
+  await supabase
+    .from("vendas")
+    .delete()
+    .eq("id", id);
 
 }
 
@@ -3041,6 +3035,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
