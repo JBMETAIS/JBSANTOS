@@ -2678,41 +2678,34 @@ alert("Venda cancelada com sucesso!");
 
 function converterOrcamento(index){
 
-  console.log("Index clicado:", index);
+let orc = vendas[index];
 
-  let orc = vendas[index];
+if(orc.tipo !== "ORCAMENTO") return;
 
- console.log("Objeto clicado:", orc);
-console.log("Tipo do registro:", orc.tipo);
+if(!confirm("Editar orçamento?")) return;
 
-  if(!orc){
-    alert("Orçamento não encontrado.");
-    return;
-  }
+// 🔥 guarda o ID real do banco
+orcamentoEmEdicaoId = orc.id;
 
-  if(!confirm("Editar orçamento?")) return;
+// carrega itens no carrinho
+carrinho = orc.itens.map(item => {
+  let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
 
-  orcamentoEmEdicaoId = orc.id;
+  return {
+    index: indexProduto,
+    nome: item.nome,
+    preco: item.preco,
+    qtd: item.qtd
+  };
+});
+descontoAtual = orc.desconto || 0;
+clienteNome.value = orc.cliente || "";
+formaPagamento.value = orc.pagamento || "";
 
-  carrinho = orc.itens.map(item => {
-    let indexProduto = produtos.findIndex(p => p.id === item.produto_id);
+show("pdv");
+atualizarCarrinho();
 
-    return {
-      index: indexProduto,
-      nome: item.nome,
-      preco: item.preco,
-      qtd: item.qtd
-    };
-  });
-
-  descontoAtual = orc.desconto || 0;
-  clienteNome.value = orc.nome_do_cliente || "";
-  formaPagamento.value = orc.forma_pagamento || "";
-
-  show("pdv");
-  atualizarCarrinho();
-
-  alert("Orçamento carregado para edição ✏️");
+alert("Orçamento carregado para edição ✏️");
 }
  
 
@@ -3086,6 +3079,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
