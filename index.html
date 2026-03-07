@@ -1698,6 +1698,8 @@ tEstoque.innerHTML=`
 <th style="width:15%; text-align:center;">Alarme</th>
 </tr>`;
 
+atualizarEstoque();
+ 
 produtos
 .filter(p => 
   (p.produto || "").toLowerCase().includes(filtro) ||
@@ -3077,6 +3079,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
