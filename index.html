@@ -1142,7 +1142,9 @@ if(dadosVenda && dadosVenda.itens){
 let cliente = dadosVenda
  ? (dadosVenda.nome_do_cliente || dadosVenda.cliente || dadosVenda.nome_cliente)
  : clienteNome.value;
-let numeroVenda = dadosVenda ? dadosVenda.numero_venda : "";
+let numeroVenda = dadosVenda
+ ? (dadosVenda.numero_venda || dadosVenda.numero || dadosVenda.id)
+ : "";
  let numeroFormatado = numeroVenda
  ? "PED-" + String(numeroVenda).padStart(4, "0")
   : "-";
@@ -1732,21 +1734,26 @@ vendas = data.map(v => ({
 
   id: v.id,
   numero: v.numero_orcamento || v.id,
-  data: new Date(v.created_at).toLocaleString("pt-BR"),
+
+  created_at: v.created_at, // importante
+
   total: v.total,
   tipo: v.tipo || "VENDA",
-  cliente: v.nome_do_cliente || "Consumidor",
-  telefone: v.telefone_do_cliente || "",
-  pagamento: v.forma_pagamento,
+
+  nome_do_cliente: v.nome_do_cliente || "Consumidor",
+  telefone_do_cliente: v.telefone_do_cliente || "",
+
+  forma_pagamento: v.forma_pagamento,
+
   desconto: v.desconto || 0,
   subtotal: v.subtotal || 0,
 
- itens: v.itens_venda.map(item => ({
-  produto_id: item.produto_id,
-  nome: item.produtos.produto,
-  qtd: item.quantidade,
-  preco: item.preco_unitario
-}))
+  itens: v.itens_venda.map(item => ({
+    produto_id: item.produto_id,
+    nome: item.produtos?.produto || "",
+    qtd: item.quantidade,
+    preco: item.preco_unitario
+  }))
 
 }));
 
@@ -3019,6 +3026,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
