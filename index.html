@@ -1682,7 +1682,7 @@ w.onload = function(){
 
 
 
-
+let tEstoque = document.getElementById("tEstoque");
 
 
 function atualizarEstoque(){
@@ -1700,8 +1700,8 @@ tEstoque.innerHTML=`
 
 produtos
 .filter(p => 
-  p.produto.toLowerCase().includes(filtro) ||
-  p.codigo.toLowerCase().includes(filtro)
+  (p.produto || "").toLowerCase().includes(filtro) ||
+  (p.codigo || "").toLowerCase().includes(filtro)
 )
 .forEach(p=>{
 
@@ -3077,6 +3077,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
