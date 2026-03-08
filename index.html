@@ -1350,9 +1350,22 @@ async function gerarOrcamento(){
   console.log("Telefone digitado:", telefoneCliente);
  
   let pagamento = formaPagamento.value || "Não informado";
-  let qtdParcelas = pagamento === "cartao" ? parcelas.value : 1;
- console.log("PARCELAS SELECIONADAS:", parcelas.value);
-  let valorParc = valorParcela.value || "";
+  let qtdParcelas = 1;
+
+if(pagamento === "cartao"){
+  qtdParcelas = parseInt(parcelas?.value);
+
+  if(isNaN(qtdParcelas) || qtdParcelas <= 0){
+    qtdParcelas = 1;
+  }
+}
+
+console.log("Parcelas escolhidas:", qtdParcelas);
+console.log("Valor da parcela:", total / qtdParcelas);
+ 
+ let valorParc = pagamento === "cartao"
+  ? (total / qtdParcelas)
+  : total;
 
   let orcamentoId;
   let numero;
@@ -1428,8 +1441,8 @@ async function gerarOrcamento(){
         desconto: descontoAtual,
         total: total,
         parcelas: Number(qtdParcelas) || 1,
-        valor_parcela: pagamento === "cartao" 
-  ? (total / (Number(parcelas.value) || 1)) 
+        valor_parcela: pagamento === "cartao"
+  ? total / qtdParcelas
   : null,
         tipo: "ORCAMENTO",
          numero_venda: null
@@ -1833,7 +1846,7 @@ vendas = data.map(v => ({
   forma_pagamento: v.forma_pagamento,
 
   parcelas: v.parcelas || 1,
-  valor_parcela: v.valor_parcela || null,
+  valor_parcela: v.valor_parcela || v.total,
 
   desconto: v.desconto || 0,
   subtotal: v.subtotal || 0,
@@ -3151,6 +3164,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
