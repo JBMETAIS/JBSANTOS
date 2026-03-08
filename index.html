@@ -416,7 +416,14 @@ transform:scale(1.05);
 
 <div id="areaCartao" style="display:none">
 <label>Parcelas</label>
-<select id="parcelas" onchange="calcularParcelas()"></select>
+<select id="parcelas" onchange="calcularParcelas()">
+  <option value="1">1x</option>
+  <option value="2">2x</option>
+  <option value="3">3x</option>
+  <option value="4">4x</option>
+  <option value="5">5x</option>
+  <option value="6">6x</option>
+</select>
 <input id="valorParcela" placeholder="Valor da parcela" readonly>
 </div>
 
@@ -1353,13 +1360,14 @@ async function gerarOrcamento(){
   let qtdParcelas = 1;
 
 if(pagamento === "cartao"){
-  qtdParcelas = parseInt(parcelas?.value);
+  qtdParcelas = parseInt(document.getElementById("parcelas")?.value);
 
   if(isNaN(qtdParcelas) || qtdParcelas <= 0){
     qtdParcelas = 1;
   }
 }
-
+ 
+console.log("Valor do select parcelas:", document.getElementById("parcelas")?.value);
 console.log("Parcelas escolhidas:", qtdParcelas);
 console.log("Valor da parcela:", total / qtdParcelas);
  
@@ -3164,6 +3172,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
