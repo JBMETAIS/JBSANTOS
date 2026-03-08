@@ -1254,8 +1254,6 @@ html += `
 });
 
 html += `
-</table>
-
 <hr>
 
 Desconto: R$ ${desconto.toFixed(2)}<br>
@@ -1267,12 +1265,13 @@ Valor Parcela: R$ ${valorParcela.toFixed(2)}<br>
 ` : ""}
 
 Forma Pagamento: ${
-pagamento === "dinheiro" ? "Dinheiro" :
-pagamento === "debito" ? "Cartão Débito" :
-pagamento === "cartao" ? "Cartão Crédito" :
-pagamento === "pix" ? "Pix" : pagamento
+  pagamento === "dinheiro" ? "Dinheiro" :
+  pagamento === "debito" ? "Cartão Débito" :
+  pagamento === "cartao" ? "Cartão Crédito" :
+  pagamento === "pix" ? "Pix" : pagamento
 }<br>
-
+`;
+ 
 <br><br>
 <div class="center">Obrigado pela preferência</div>
 
@@ -3132,6 +3131,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
