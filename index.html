@@ -1471,6 +1471,12 @@ const { data: empresa } = await supabaseClient
 
 const emp = empresa || {};
 
+
+
+let dataOrc = orc.data || orc.created_at || new Date();
+dataOrc = new Date(dataOrc).toLocaleDateString();
+
+  
 let cliente =
   orc.cliente ||
   orc.nome_do_cliente ||
@@ -1486,9 +1492,9 @@ let telefone =
 let pagamento =
   orc.pagamento ||
   orc.forma_pagamento ||
-  "";
+  "Não informado";
 
-let numeroBase = orc.numero || orc.numero_orcamento || "";
+let numeroBase = orc.numero || orc.numero_orcamento || orc.id || 1;
 let numeroFormatado = String(numeroBase).replace("ORC-","");
 numeroFormatado = numeroFormatado.padStart(4,'0');
 
@@ -1596,7 +1602,7 @@ ORÇAMENTO
 </div>
 
 <div style="font-size:14px;">
-<b>Data:</b> ${orc.data}
+<b>Data:</b> ${dataOrc}
 </div>
 
 <div style="font-size:14px;">
@@ -1628,12 +1634,19 @@ ${telefone ? `<b>Telefone:</b> ${telefone}` : ""}
 `;
 
 orc.itens.forEach((i,index)=>{
+
+let nomeProduto = i.nome || i.descricao || "Produto";
 let sub = i.preco * i.qtd;
 
+let subtotal = Number(orc.subtotal || 0);
+let desconto = Number(orc.desconto || 0);
+let total = Number(orc.total || 0);
+
+ 
 html += `
 <tr>
 <td>${index+1}</td>
-<td>${i.nome}</td>
+<td>${nomeProduto}</td>
 <td>R$ ${i.preco.toFixed(2)}</td>
 <td>${i.qtd}</td>
 <td>R$ ${sub.toFixed(2)}</td>
@@ -1654,11 +1667,11 @@ ${pagamento === "cartao" ? `
 </div>
 
 <div class="total">
-Subtotal: R$ ${orc.subtotal.toFixed(2)}<br>
-Desconto: ${orc.desconto.toFixed(2)}%
+Subtotal: R$ ${subtotal.toFixed(2)}<br>
+Desconto: ${desconto.toFixed(2)}%
 <hr>
 <div class="totalFinal">
-Total: R$ ${orc.total.toFixed(2)}
+Total: R$ ${total.toFixed(2)}
 </div>
 </div>
 
@@ -3091,6 +3104,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
