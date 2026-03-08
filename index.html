@@ -1363,7 +1363,7 @@ async function gerarOrcamento(){
   console.log("Telefone digitado:", telefoneCliente);
  
   let pagamento = formaPagamento.value || "Não informado";
-  let qtdParcelas = 1;
+  let qtdParcelas = Number(document.getElementById("parcelas")?.value) || 1;
 
 if(pagamento === "cartao"){
   qtdParcelas = parseInt(document.getElementById("parcelas")?.value);
@@ -1421,7 +1421,11 @@ console.log("Valor da parcela:", total / qtdParcelas);
      forma_pagamento: pagamento,
       subtotal: subtotal,
       desconto: descontoAtual,
-      total: total
+      total: total,
+      parcelas: Number(qtdParcelas) || 1,
+      valor_parcela: pagamento === "cartao"
+      ? total / qtdParcelas
+      : null
     })
     .eq("id", orcamentoId);
 
@@ -3178,6 +3182,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
