@@ -983,8 +983,8 @@ Valor da venda: R$ ${total.toFixed(2)}`);
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
-  cliente_id: null, 
-  nome_do_cliente: cliente,
+  cliente_id: cliente.id, 
+  nome_do_cliente: cliente.nome,
   telefone_do_cliente: telefoneCliente,
   forma_pagamento: formaPagamento.value,
   subtotal: subtotal,
@@ -3193,6 +3193,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
