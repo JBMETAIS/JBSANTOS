@@ -927,6 +927,8 @@ let cliente = document.getElementById("clienteNome").value || "Consumidor";
 let telefoneCliente = document.getElementById("telefoneCliente")?.value || "";
 let vendaId = Date.now();
 
+let valorRecebido = Number(document.getElementById("valorRecebido")?.value || 0);
+let troco = Number(document.getElementById("troco")?.value || 0);
 
 
 // ============================
@@ -954,15 +956,17 @@ Valor da venda: R$ ${total.toFixed(2)}`);
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
   .from("vendas")
   .insert([{
-    cliente_id: cliente.id,
-    nome_do_cliente: cliente.nome,
-    telefone_do_cliente: telefoneCliente,
-    forma_pagamento: "conta",
-    subtotal: total,
-    desconto: descontoAtual,
-    total: total,
-    tipo: "VENDA"
-  }])
+  cliente_id: null, 
+  nome_do_cliente: cliente,
+  telefone_do_cliente: telefoneCliente,
+  forma_pagamento: formaPagamento.value,
+  subtotal: subtotal,
+  desconto: descontoAtual,
+  total: total,
+  valor_recebido: valorRecebido,
+  troco: troco,
+  tipo: "VENDA"
+}])
   .select()
   .single();
 
@@ -1109,6 +1113,9 @@ for (let item of carrinho) {
 await carregarProdutos();
  atualizarProdutos();
 
+vendaCriada.valorRecebido = valorRecebido;
+vendaCriada.troco = troco;
+ 
 imprimirCupom(total,"VENDA", vendaCriada);
 
 alert("Venda finalizada com sucesso!");
@@ -3120,6 +3127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
