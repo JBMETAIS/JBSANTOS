@@ -2853,8 +2853,6 @@ function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroReci
 let saldoApos = cliente.saldo;
 let disponivel = cliente.limite - saldoApos;
 
-}
-
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
 
 let largura = 302;
@@ -2920,6 +2918,7 @@ Assinatura: ______________________
 w.document.write(html);
 w.document.close();
 w.print();
+
 }
 
 
@@ -3190,6 +3189,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
