@@ -2423,7 +2423,7 @@ setTimeout(() => {
 
 async function registrarPagamento(cliente, valor, formaPagamento){
 
-  let saldoApos = cliente.saldo;
+  let saldoApos = cliente.saldo - valor;
   let limiteDisponivel = cliente.limite - saldoApos;
 
   const { data, error } = await supabaseClient
@@ -2444,7 +2444,11 @@ async function registrarPagamento(cliente, valor, formaPagamento){
     return;
   }
 
-  alert("Pagamento registrado com sucesso");
+  // atualizar saldo do cliente
+  await supabaseClient
+    .from("clientes")
+    .update({ saldo: saldoApos })
+    .eq("id", cliente.id);
 
   imprimirComprovantePagamento(
     cliente,
@@ -2504,13 +2508,10 @@ async function confirmarPagamento(){
   }
 
   // 🔹 INSERE USANDO SUA ESTRUTURA REAL
-  const { error } = await supabaseClient
-    .from("pagamentos")
-    .insert([{
-     cliente_id: cliente.id, // porque sua coluna é TEXT
-      valor: valor,
-      criado_em: new Date().toISOString()
-    }]);
+ 
+ let formaPagamento = document.getElementById("formaPagamentoSelect").value;
+
+await registrarPagamento(cliente, valor, formaPagamento);
 
   if(error){
     console.error(error);
@@ -3202,6 +3203,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
