@@ -1670,14 +1670,16 @@ ${telefone ? `<b>Telefone:</b> ${telefone}` : ""}
 </tr>
 `;
 
-orc.itens.forEach((i,index)=>{
 
-let nomeProduto = i.nome || i.descricao || "Produto";
-let sub = i.preco * i.qtd;
 
 let subtotal = Number(orc.subtotal || 0);
 let desconto = Number(orc.desconto || 0);
 let total = Number(orc.total || 0);
+  
+orc.itens.forEach((i,index)=>{
+
+let nomeProduto = i.nome || i.descricao || "Produto";
+let sub = i.preco * i.qtd;
 
  
 html += `
@@ -3141,5 +3143,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
