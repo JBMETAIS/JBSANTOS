@@ -1422,10 +1422,12 @@ console.log("Valor da parcela:", total / qtdParcelas);
       subtotal: subtotal,
       desconto: descontoAtual,
       total: total,
-      parcelas: Number(qtdParcelas) || 1,
-      valor_parcela: pagamento === "cartao"
-      ? total / qtdParcelas
-      : null
+      parcelas: pagamento === "cartao"
+ ? Number(parcelas.value) || 1
+ : 1,
+     valor_parcela: pagamento === "cartao"
+ ? total / (Number(parcelas.value) || 1)
+ : null,
     })
     .eq("id", orcamentoId);
 
@@ -1458,10 +1460,12 @@ console.log("Valor da parcela:", total / qtdParcelas);
         subtotal: subtotal,
         desconto: descontoAtual,
         total: total,
-        parcelas: Number(qtdParcelas) || 1,
+        parcelas: pagamento === "cartao"
+ ? Number(parcelas.value) || 1
+ : 1,
         valor_parcela: pagamento === "cartao"
-  ? total / qtdParcelas
-  : null,
+ ? total / (Number(parcelas.value) || 1)
+ : null,
         tipo: "ORCAMENTO",
          numero_venda: null
       }])
@@ -3182,6 +3186,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
