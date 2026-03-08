@@ -1426,7 +1426,7 @@ async function gerarOrcamento(){
         subtotal: subtotal,
         desconto: descontoAtual,
         total: total,
-        parcelas: pagamento === "cartao" ? Number(parcelas.value) || 1 : 1,
+        parcelas: Number(qtdParcelas) || 1,
         valor_parcela: pagamento === "cartao" 
   ? (total / (Number(parcelas.value) || 1)) 
   : null,
@@ -3150,6 +3150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
