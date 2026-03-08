@@ -1373,8 +1373,8 @@ async function gerarOrcamento(){
   
   let parcelas = document.getElementById("parcelas");
  
-  let qtdParcelas = Number(parcelas.value) || 1;
-
+  let qtdParcelas = Number(parcelas?.value) || 1;
+ 
  console.log("Parcelas enviadas:", qtdParcelas);
 console.log("Valor da parcela:", total / qtdParcelas);
 
@@ -1466,10 +1466,7 @@ console.log("Valor da parcela:", total / qtdParcelas);
 console.log("Pagamento:", pagamento);
 console.log("Parcelas enviadas:", qtdParcelas);
 console.log("Valor do select:", parcelas.value);
-
-let parcelasSelect = document.getElementById("parcelas");
-let qtdParcelas = Number(parcelasSelect?.value) || 1;
-   
+ 
     const { data, error } = await supabaseClient
       .from("vendas")
       .insert([{
@@ -3201,6 +3198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
