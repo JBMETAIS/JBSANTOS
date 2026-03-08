@@ -1375,6 +1375,9 @@ async function gerarOrcamento(){
  
   let qtdParcelas = Number(parcelas.value) || 1;
 
+ console.log("Parcelas enviadas:", qtdParcelas);
+console.log("Valor da parcela:", total / qtdParcelas);
+
 if(pagamento === "cartao"){
   qtdParcelas = Number(parcelas.value) || 1;
 
@@ -3198,6 +3201,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
