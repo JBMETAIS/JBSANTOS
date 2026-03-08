@@ -1133,6 +1133,8 @@ let pagamento = dadosVenda
 let parc = (dadosVenda ? dadosVenda.parcelas : parcelas.value) || 1;
 let itens = [];
 
+if(dadosVenda && dadosVenda.itens){
+
 itens = dadosVenda.itens.map(i => ({
   nome: i.produtos?.produto || i.produto || i.nome || "Produto",
   codigo: i.produtos?.codigo || i.codigo || i.cod || i.produto_id || "-",
@@ -1140,13 +1142,15 @@ itens = dadosVenda.itens.map(i => ({
   qtd: Number(i.quantidade ?? i.qtd ?? 1)
 }));
 
- else{
-  itens = carrinho.map(i => ({
+}else{
+
+itens = carrinho.map(i => ({
   nome: i.nome,
   codigo: i.codigo,
   preco: i.preco,
   qtd: i.qtd
 }));
+
 }
 let cliente = dadosVenda
  ? (dadosVenda.nome_do_cliente || dadosVenda.cliente || dadosVenda.nome_cliente)
@@ -3116,6 +3120,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
