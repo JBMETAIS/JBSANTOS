@@ -1891,6 +1891,34 @@ atualizarHistorico();
 
 
 
+
+
+
+async function carregarHistoricoPagamentos(cliente){
+
+  const { data, error } = await supabaseClient
+    .from("pagamentos")
+    .select("*")
+    .eq("cliente_id", cliente.id)
+    .order("criado_em", { ascending:false });
+
+  if(error){
+    console.error(error);
+    return;
+  }
+
+  mostrarHistoricoPagamentos(data, cliente);
+
+}
+
+
+
+ 
+
+
+
+ 
+
 function atualizarHistorico(){
 
 tHistorico.innerHTML=`
@@ -2421,14 +2449,19 @@ setTimeout(() => {
 
 
 
-async function registrarPagamento(clienteId, valor, formaPagamento){
+async function registrarPagamento(cliente, valor, formaPagamento){
+
+  let saldoApos = cliente.saldo;
+  let limiteDisponivel = cliente.limite - saldoApos;
 
   const { data, error } = await supabaseClient
     .from("pagamentos")
     .insert([{
-      cliente_id: clienteId,
+      cliente_id: cliente.id,
       valor: valor,
-      forma_pagamento: formaPagamento
+      forma_pagamento: formaPagamento,
+      saldo_apos: saldoApos,
+      limite_apos: limiteDisponivel
     }])
     .select()
     .single();
@@ -2441,7 +2474,13 @@ async function registrarPagamento(clienteId, valor, formaPagamento){
 
   alert("Pagamento registrado com sucesso");
 
-  imprimirComprovante(data);
+  imprimirComprovantePagamento(
+    cliente,
+    valor,
+    formaPagamento,
+    data.id
+  );
+
 }
 
 
@@ -3014,6 +3053,8 @@ atualizarEstoque();
   <option value="Cartão Crédito">Cartão Crédito</option>
 </select>
 
+<h4>Histórico de Pagamentos</h4>
+<div id="historicoPagamentos" style="max-height:150px;overflow:auto;"></div>
 
 <div id="parcelamentoBox" style="display:none;">
 
@@ -3161,6 +3202,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
