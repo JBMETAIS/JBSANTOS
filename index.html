@@ -1136,7 +1136,7 @@ let itens = [];
 if(dadosVenda && dadosVenda.itens){
   itens = dadosVenda.itens.map(i => ({
     nome: i.produtos?.produto || i.nome,
-    codigo: i.produtos?.codigo || i.codigo || i.produto_id || "",
+    codigo: i.produtos?.codigo || i.codigo || i.cod || i.produto_id || "-",
     preco: i.preco_unitario ?? i.preco,
     qtd: i.quantidade ?? i.qtd
   }));
@@ -1162,11 +1162,15 @@ desconto = Number(desconto || 0);
  
 let valorRec = dadosVenda
  ? (dadosVenda.valorRecebido || dadosVenda.valor_recebido || 0)
- : valorRecebido.value;
+ : Number(document.getElementById("valorRecebido")?.value || 0);
 
 let valorTroco = dadosVenda
  ? (dadosVenda.troco || 0)
- : troco.value;
+ : Number(document.getElementById("troco")?.value || 0);
+
+valorRec = Number(valorRec || 0);
+valorTroco = Number(valorTroco || 0);
+ 
  
 let dataVenda = dadosVenda
  ? new Date(dadosVenda.created_at || dadosVenda.data).toLocaleString("pt-BR")
@@ -3112,6 +3116,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
