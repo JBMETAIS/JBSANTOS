@@ -1463,6 +1463,9 @@ console.log("Valor da parcela:", total / qtdParcelas);
 console.log("Pagamento:", pagamento);
 console.log("Parcelas enviadas:", qtdParcelas);
 console.log("Valor do select:", parcelas.value);
+
+let parcelasSelect = document.getElementById("parcelas");
+let qtdParcelas = Number(parcelasSelect?.value) || 1;
    
     const { data, error } = await supabaseClient
       .from("vendas")
@@ -1474,14 +1477,10 @@ console.log("Valor do select:", parcelas.value);
         subtotal: subtotal,
         desconto: descontoAtual,
         total: total,
-        parcelas: pagamento === "cartao"
- ? Number(parcelas.value) || 1
- : 1,
-        valor_parcela: pagamento === "cartao"
- ? total / (Number(parcelas.value) || 1)
- : null,
+        parcelas: pagamento === "cartao" ? qtdParcelas : 1,
+        valor_parcela: pagamento === "cartao" ? total / qtdParcelas : null,
         tipo: "ORCAMENTO",
-         numero_venda: null
+        numero_venda: null
       }])
       .select()
       .single();
@@ -3199,6 +3198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
