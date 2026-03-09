@@ -2432,9 +2432,11 @@ setTimeout(() => {
 
 async function registrarPagamento(cliente, valor, formaPagamento){
 
+  // calcular novos valores
   let saldoApos = cliente.saldo - valor;
   let limiteDisponivel = cliente.limite - saldoApos;
 
+  // 1️⃣ registrar pagamento
   const { data, error } = await supabaseClient
     .from("pagamentos")
     .insert([{
@@ -2453,12 +2455,20 @@ async function registrarPagamento(cliente, valor, formaPagamento){
     return;
   }
 
-  // atualizar saldo do cliente
+  // 2️⃣ atualizar cliente no banco
   await supabaseClient
     .from("clientes")
-    .update({ saldo: saldoApos })
+    .update({
+      saldo: saldoApos,
+      disponivel: limiteDisponivel
+    })
     .eq("id", cliente.id);
 
+  // 3️⃣ atualizar objeto cliente local
+  cliente.saldo = saldoApos;
+  cliente.disponivel = limiteDisponivel;
+
+  // 4️⃣ agora sim imprimir comprovante
   imprimirComprovantePagamento(
     cliente,
     valor,
@@ -3198,6 +3208,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
