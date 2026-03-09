@@ -2374,7 +2374,7 @@ async function reimprimirUltimaVenda(clienteId){
     .eq("cliente_id", clienteId)
     .order("id", { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if(error || !data){
     console.error(error);
@@ -2400,7 +2400,7 @@ async function reimprimirUltimaVenda(clienteId){
     }))
   };
 
-  imprimirCupom(vendaFormatada.total, "REIMPRESSÃO", vendaFormatada);
+  imprimirCupom(vendaFormatada.total,"REIMPRESSÃO",vendaFormatada);
 }
  
  
@@ -3247,6 +3247,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
