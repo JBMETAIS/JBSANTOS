@@ -2052,9 +2052,7 @@ ${v.tipo === "CONTA_CLIENTE" ? `
 
 ${v.tipo === "PAGAMENTO_CONTA" ? `
 <div class="tooltip">
-<button onclick="reimprimirComprovantePagamento('${v.id}')">
-🧾
-</button>
+<button class="btn-small" onclick="reimprimirComprovantePagamento('${v.id}')">🧾</button>
 <span class="tooltip-text">Reimprimir Comprovante</span>
 </div>
 ` : ""}
@@ -3275,6 +3273,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
