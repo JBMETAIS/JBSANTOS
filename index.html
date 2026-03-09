@@ -2112,51 +2112,31 @@ async function verExtrato(clienteId){
     return;
   }
 
-  // 🔹 BUSCAR VENDAS NA CONTA
-  const { data: vendas, error: erroVendas } = await supabaseClient
-    .from("vendas")
-    .select("id, total, created_at")
+  // 🔹 BUSCAR TODAS AS MOVIMENTAÇÕES DO CLIENTE
+  const { data: movimentacoes, error: erroMov } = await supabaseClient
+    .from("movimentacoes_clientes")
+    .select("*")
     .eq("cliente_id", clienteId)
-    .eq("forma_pagamento", "conta");
+    .order("data", { ascending: true });
 
-  if(erroVendas){
-    console.error(erroVendas);
-    alert("Erro ao buscar vendas");
+  if(erroMov){
+    console.error(erroMov);
+    alert("Erro ao buscar movimentações do cliente");
     return;
   }
 
-  // 🔹 BUSCAR PAGAMENTOS
-  const { data: pagamentos, error: erroPag } = await supabaseClient
-    .from("pagamentos")
-   .select("valor, criado_em")
-    .eq("cliente_id", clienteId);
-
-  if(erroPag){
-    console.error(erroPag);
-    alert("Erro ao buscar pagamentos");
-    return;
-  }
-
-  // 🔹 JUNTAR TUDO
+  // 🔹 MONTAR EXTRATO
   let extrato = [];
 
-  vendas.forEach(v => {
+  movimentacoes.forEach(m => {
     extrato.push({
-      data: v.created_at,
-      descricao: "Venda no PDV",
-      valor: Number(v.total)
+      data: m.data,
+      descricao: m.descricao,
+      valor: m.tipo === "credito" ? Number(m.valor) : -Number(m.valor)
     });
   });
 
-  pagamentos.forEach(p => {
-    extrato.push({
-      data: p.criado_em,
-      descricao: "Pagamento",
-      valor: -Number(p.valor)
-    });
-  });
-
-  // 🔹 ORDENAR POR DATA
+  // 🔹 ORDENAR POR DATA (opcional, já vem ordenado do supabase)
   extrato.sort((a,b) => new Date(a.data) - new Date(b.data));
 
   // 🔹 CALCULAR SALDO PROGRESSIVO
@@ -2165,20 +2145,21 @@ async function verExtrato(clienteId){
 
   extrato.forEach(item => {
 
-  saldo += item.valor;
+    saldo += item.valor;
 
-  let cor = item.valor > 0 ? "#c62828" : "#1fa84f";
+    // 🔹 DEFINE COR
+    let cor = item.valor > 0 ? "#c62828" : "#1fa84f";
 
-  // 🔹 DEFINE TEXTO COM ÍCONE
-  let descricaoFormatada = "";
+    // 🔹 DEFINE TEXTO COM ÍCONE
+    let descricaoFormatada = "";
 
-  if(item.valor > 0){
-    descricaoFormatada = "🛒 Compra";
-  } else {
-    descricaoFormatada = "💰 Pagamento";
-  }
+    if(item.valor > 0){
+      descricaoFormatada = "🛒 Compra"; // crédito = compra
+    } else {
+      descricaoFormatada = "💰 Pagamento"; // débito = pagamento
+    }
 
-  html += `
+    html += `
       <tr>
         <td style="padding:8px;">
           ${new Date(item.data).toLocaleString()}
@@ -2197,7 +2178,7 @@ async function verExtrato(clienteId){
         </td>
       </tr>
     `;
-});
+  });
 
   document.getElementById("extratoNome").innerText = cliente.nome;
   document.getElementById("extratoSaldo").innerText = "R$ " + saldo.toFixed(2);
@@ -2206,11 +2187,10 @@ async function verExtrato(clienteId){
   document.getElementById("modalExtrato").style.display = "flex";
 }
 
-
-
 function fecharExtrato(){
-document.getElementById("modalExtrato").style.display = "none";
+  document.getElementById("modalExtrato").style.display = "none";
 }
+
 
 
 async function cadastrarCliente(){
@@ -3229,6 +3209,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
