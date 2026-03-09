@@ -2933,11 +2933,13 @@ alert("Orçamento carregado para edição ✏️");
 
 function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, reimpressao=false){
 
-let saldoApos = cliente.saldo;
-let disponivel = cliente.limite - saldoApos;
+cliente = cliente || {nome:"Cliente", saldo:0, limite:0};
+
+let saldoApos = cliente.saldo || 0;
+let disponivel = (cliente.limite || 0) - saldoApos;
 
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
-
+ 
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
 
@@ -3273,6 +3275,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
