@@ -2990,8 +2990,8 @@ Valor Pago: R$ ${valor.toFixed(2)}<br>
 
 <hr>
 
-Saldo Após Pagamento: R$ ${saldoApos.toFixed(2)}<br>
-Limite Disponível: R$ ${limiteDisponivel.toFixed(2)}<br>
+Saldo Após Pagamento: R$ ${Number(saldoApos).toFixed(2)}<br>
+Limite Disponível: R$ ${Number(limiteApos).toFixed(2)}<br>
 
 <hr>
 
@@ -3284,6 +3284,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
