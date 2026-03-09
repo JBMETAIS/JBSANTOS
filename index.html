@@ -1256,18 +1256,22 @@ itens = carrinho.map(i => ({
 }));
 
 }
+
 let cliente = dadosVenda
  ? (dadosVenda.nome_do_cliente || dadosVenda.cliente || dadosVenda.nome_cliente)
  : clienteNome.value;
+
 let numeroVenda = dadosVenda
  ? (dadosVenda.numero || dadosVenda.numero_venda || dadosVenda.id)
  : "";
- let numeroFormatado = numeroVenda
+
+let numeroFormatado = numeroVenda
  ? "PEDIDO-" + String(numeroVenda).padStart(4, "0")
-  : "-";
+ : "-";
+
 let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
 desconto = Number(desconto || 0);
- 
+
 let valorRec = dadosVenda
  ? (dadosVenda.valorRecebido || dadosVenda.valor_recebido || 0)
  : Number(document.getElementById("valorRecebido")?.value || 0);
@@ -1278,8 +1282,7 @@ let valorTroco = dadosVenda
 
 valorRec = Number(valorRec || 0);
 valorTroco = Number(valorTroco || 0);
- 
- 
+
 let dataVenda = dadosVenda
  ? new Date(dadosVenda.created_at || dadosVenda.data).toLocaleString("pt-BR")
  : new Date().toLocaleString("pt-BR");
@@ -1288,43 +1291,79 @@ let html = `
 <html>
 <head>
 <style>
+
 body{
 font-family:monospace;
 width:280px;
 margin:0;
 padding:10px;
+font-size:12px;
 }
-.center{text-align:center;}
-hr{border-top:1px dashed #000;}
-table{width:100%;font-size:12px;}
-td{padding:2px 0;}
+
+.center{
+text-align:center;
+}
+
+.right{
+text-align:right;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+}
+
+hr{
+border:none;
+border-top:1px dashed #000;
+margin:6px 0;
+}
+
+table{
+width:100%;
+font-size:12px;
+border-collapse:collapse;
+}
+
+th, td{
+padding:2px 0;
+}
+
+.total{
+font-size:14px;
+font-weight:bold;
+}
+
 </style>
 </head>
 <body>
 
 <div class="center">
 <strong>${tipo}</strong><br>
-${config.nome || "JB SANTOS"}<br>
+
+<strong>${config.nome || "JB SANTOS"}</strong><br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}<br>
+
 <br>
-<strong>*********** CUPOM NÃO FISCAL ***********</strong><br>
+<strong>CUPOM NÃO FISCAL</strong>
 </div>
 
 <hr>
 
 <strong>${numeroFormatado}</strong><br>
 Cliente: ${cliente || "Consumidor"}<br>
-Data: ${dataVenda}<br>
+Data: ${dataVenda}
 
 <hr>
 
 <table>
+
 <tr>
-<td><strong>Cod</strong></td>
-<td><strong>Produto</strong></td>
-<td align="right"><strong>Total</strong></td>
+<th>Cod</th>
+<th>Produto</th>
+<th class="right">Total</th>
 </tr>
 `;
 
@@ -1334,8 +1373,11 @@ let sub = i.preco * i.qtd;
 html += `
 <tr>
 <td>${i.codigo || "-"}</td>
-<td>${i.nome}<br>${i.qtd} x ${i.preco.toFixed(2)}</td>
-<td align="right">${sub.toFixed(2)}</td>
+<td>
+${i.nome}<br>
+${i.qtd} x ${i.preco.toFixed(2)}
+</td>
+<td class="right">${sub.toFixed(2)}</td>
 </tr>
 `;
 });
@@ -1345,28 +1387,61 @@ html += `
 
 <hr>
 
-Desconto: R$ ${desconto.toFixed(2)}<br>
-TOTAL: ${total.toFixed(2)}<br>
+<div class="row">
+<span>Desconto:</span>
+<span>R$ ${desconto.toFixed(2)}</span>
+</div>
+
+<div class="row total">
+<span>TOTAL:</span>
+<span>R$ ${total.toFixed(2)}</span>
+</div>
 
 ${pagamento==="dinheiro" ? `
-Valor Recebido: R$ ${Number(valorRec).toFixed(2)}<br>
-Troco: R$ ${Number(valorTroco).toFixed(2)}<br>
+<hr>
+
+<div class="row">
+<span>Valor Recebido:</span>
+<span>R$ ${valorRec.toFixed(2)}</span>
+</div>
+
+<div class="row">
+<span>Troco:</span>
+<span>R$ ${valorTroco.toFixed(2)}</span>
+</div>
 ` : ""}
 
 ${pagamento === "cartao" ? `
-Parcelas: ${(parc || 1)}x<br>
-Valor Parcela: R$ ${(Number(total) / (parc || 1)).toFixed(2)}<br>
+<hr>
+
+<div class="row">
+<span>Parcelas:</span>
+<span>${(parc || 1)}x</span>
+</div>
+
+<div class="row">
+<span>Valor Parcela:</span>
+<span>R$ ${(Number(total) / (parc || 1)).toFixed(2)}</span>
+</div>
 ` : ""}
 
-Forma Pagamento: ${
+<hr>
+
+<div class="row">
+<span>Forma Pagamento:</span>
+<span>${
 pagamento === "dinheiro" ? "Dinheiro" :
 pagamento === "debito" ? "Cartão Débito" :
 pagamento === "cartao" ? "Cartão Crédito" :
 pagamento === "pix" ? "Pix" : pagamento
-}<br>
+}</span>
+</div>
 
 <br><br>
-<div class="center">Obrigado pela preferência</div>
+
+<div class="center">
+Obrigado pela preferência
+</div>
 
 </body>
 </html>
@@ -3317,6 +3392,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
