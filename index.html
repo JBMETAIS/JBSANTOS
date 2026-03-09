@@ -994,6 +994,7 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   valor_recebido: 0,
   troco: 0,
   parcelas: 1,
+  numero_pedido: numeroPedido,
   tipo: "CONTA_CLIENTE"
 }])
 .select()
@@ -2351,7 +2352,9 @@ async function reimprimirUltimaVenda(clienteId){
   }
 
   let vendaFormatada = {
-    cliente: data.cliente || "Consumidor",
+
+    pedido: data.numero_pedido
+    cliente: data.nome_do_cliente || "Consumidor"
     data: new Date(data.created_at).toLocaleString("pt-BR"),
     total: data.total,
     desconto: data.desconto || 0,
@@ -3212,6 +3215,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
