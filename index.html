@@ -1226,72 +1226,20 @@ await carregarHistoricoDoBanco();
 
  
 
-function imprimirCupom(total, tipo="VENDA", dadosVenda=null){
+function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, reimpressao=false){
+
+let saldoApos = cliente.saldo;
+let disponivel = cliente.limite - saldoApos;
+
+let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
 
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
-
-let pagamento = dadosVenda
- ? (dadosVenda.forma_pagamento || dadosVenda.pagamento)
- : formaPagamento.value;
-let parc = Number(dadosVenda ? dadosVenda.parcelas : parcelas.value) || 1;
-let itens = [];
-
-if(dadosVenda && dadosVenda.itens){
-
-itens = dadosVenda.itens.map(i => ({
-  nome: i.produtos?.produto || i.nome || produtos.find(p => p.id === i.produto_id)?.produto || "Produto",
-  codigo: i.produtos?.codigo || i.codigo || produtos.find(p => p.id === i.produto_id)?.codigo || "-",
-  preco: Number(i.preco_unitario ?? i.preco ?? 0),
-  qtd: Number(i.quantidade ?? i.qtd ?? 1)
-}));
-
-}else{
-
-itens = carrinho.map(i => ({
-  nome: i.nome,
-  codigo: i.codigo,
-  preco: i.preco,
-  qtd: i.qtd
-}));
-
-}
-
-let cliente = dadosVenda
- ? (dadosVenda.nome_do_cliente || dadosVenda.cliente || dadosVenda.nome_cliente)
- : clienteNome.value;
-
-let numeroVenda = dadosVenda
- ? (dadosVenda.numero || dadosVenda.numero_venda || dadosVenda.id)
- : "";
-
-let numeroFormatado = numeroVenda
- ? "PEDIDO-" + String(numeroVenda).padStart(4, "0")
- : "-";
-
-let desconto = dadosVenda ? dadosVenda.desconto : descontoAtual;
-desconto = Number(desconto || 0);
-
-let valorRec = dadosVenda
- ? (dadosVenda.valorRecebido || dadosVenda.valor_recebido || 0)
- : Number(document.getElementById("valorRecebido")?.value || 0);
-
-let valorTroco = dadosVenda
- ? (dadosVenda.troco || 0)
- : Number(document.getElementById("troco")?.value || 0);
-
-valorRec = Number(valorRec || 0);
-valorTroco = Number(valorTroco || 0);
-
-let dataVenda = dadosVenda
- ? new Date(dadosVenda.created_at || dadosVenda.data).toLocaleString("pt-BR")
- : new Date().toLocaleString("pt-BR");
 
 let html = `
 <html>
 <head>
 <style>
-
 body{
 font-family:monospace;
 width:280px;
@@ -1299,153 +1247,46 @@ margin:0;
 padding:10px;
 font-size:12px;
 }
-
-.center{
-text-align:center;
-}
-
-.right{
-text-align:right;
-}
-
-.row{
-display:flex;
-justify-content:space-between;
-}
-
-hr{
-border:none;
-border-top:1px dashed #000;
-margin:6px 0;
-}
-
-table{
-width:100%;
-font-size:12px;
-border-collapse:collapse;
-table-layout:fixed;
-}
-
-.col-cod{
-width:50px;
-}
-
-.col-prod{
-width:150px;
-word-break:break-word;
-}
-
-.col-total{
-width:60px;
-text-align:right;
-}
-
+.center{text-align:center;}
+hr{border-top:1px dashed #000;}
 </style>
 </head>
 <body>
 
 <div class="center">
-<strong>${tipo}</strong><br>
-
-<strong>${config.nome || "JB SANTOS"}</strong><br>
+${reimpressao ? "<strong>REIMPRESSÃO</strong><br>" : ""}
+<strong>COMPROVANTE DE PAGAMENTO</strong><br>
+Recibo Nº: ${recibo}<br><br>
+${config.nome || "JB SANTOS"}<br>
 CNPJ: ${config.cnpj || ""}<br>
 ${config.endereco || ""}<br>
 ${config.telefone || ""}<br>
+</div>
+
+<hr>
+
+Cliente: ${cliente.nome}<br>
+Data: ${new Date().toLocaleString("pt-BR")}<br>
+
+<hr>
+
+Forma de Pagamento: ${formaPagamento}<br>
+Valor Pago: R$ ${valor.toFixed(2)}<br>
 
 <br>
-<strong>CUPOM NÃO FISCAL</strong>
-</div>
+
+         Pgto. de conta em aberto
 
 <hr>
 
-<strong>${numeroFormatado}</strong><br>
-Cliente: ${cliente || "Consumidor"}<br>
-Data: ${dataVenda}
+Saldo Após Pagamento: R$ ${saldoApos.toFixed(2)}<br>
+Limite Disponível: R$ ${disponivel.toFixed(2)}<br>
 
 <hr>
-
-<table>
-
-<pre>
-COD   PRODUTO             TOTAL
-</pre>
-`;
-
-itens.forEach(i=>{
-
-let sub = i.preco * i.qtd;
-
-let cod = String(i.codigo || "-").padEnd(6," ");
-let nome = String(i.nome).substring(0,18).padEnd(18," ");
-let total = sub.toFixed(2).padStart(7," ");
-
-let qtdPreco = (i.qtd + " x " + i.preco.toFixed(2));
-
-html += `
-${cod}${nome}${total}<br>
-      ${qtdPreco}<br>
-`;
-});
-
-html += `
-</table>
-
-<hr>
-
-<div class="row">
-<span>Desconto:</span>
-<span>R$ ${desconto.toFixed(2)}</span>
-</div>
-
-<div class="row total">
-<span>TOTAL:</span>
-<span>R$ ${total.toFixed(2)}</span>
-</div>
-
-${pagamento==="dinheiro" ? `
-<hr>
-
-<div class="row">
-<span>Valor Recebido:</span>
-<span>R$ ${valorRec.toFixed(2)}</span>
-</div>
-
-<div class="row">
-<span>Troco:</span>
-<span>R$ ${valorTroco.toFixed(2)}</span>
-</div>
-` : ""}
-
-${pagamento === "cartao" ? `
-<hr>
-
-<div class="row">
-<span>Parcelas:</span>
-<span>${(parc || 1)}x</span>
-</div>
-
-<div class="row">
-<span>Valor Parcela:</span>
-<span>R$ ${(Number(total) / (parc || 1)).toFixed(2)}</span>
-</div>
-` : ""}
-
-<hr>
-
-<div class="row">
-<span>Forma Pagamento:</span>
-<span>${
-pagamento === "dinheiro" ? "Dinheiro" :
-pagamento === "debito" ? "Cartão Débito" :
-pagamento === "cartao" ? "Cartão Crédito" :
-pagamento === "pix" ? "Pix" : pagamento
-}</span>
-</div>
-
-<br><br>
 
 <div class="center">
-Obrigado pela preferência
+Pagamento registrado com sucesso<br><br>
+Assinatura: ______________________
 </div>
 
 </body>
@@ -1455,6 +1296,7 @@ Obrigado pela preferência
 w.document.write(html);
 w.document.close();
 w.print();
+
 }
 
 
@@ -3397,6 +3239,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
