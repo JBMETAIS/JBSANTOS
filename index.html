@@ -2931,7 +2931,7 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, reimpressao=false){
+function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, dataPagamento, reimpressao=false){
 
 cliente = cliente || {nome:"Cliente", saldo:0, limite:0};
 
@@ -2977,7 +2977,7 @@ ${config.telefone || ""}<br>
 <hr>
 
 Cliente: ${cliente.nome}<br>
-Data: ${new Date().toLocaleString("pt-BR")}<br>
+Data: ${new Date(dataPagamento).toLocaleString("pt-BR")}<br>
 
 <hr>
 
@@ -3030,6 +3030,7 @@ imprimirComprovantePagamento(
  data.total,
  data.forma_pagamento,
  data.id,
+ data.created_at,
  true
 );
 
@@ -3283,6 +3284,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
