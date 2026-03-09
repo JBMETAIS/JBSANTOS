@@ -2939,6 +2939,10 @@ valor = Number(valor) || 0;
 formaPagamento = formaPagamento || "Não informado";
 numeroRecibo = numeroRecibo || "00000000";
 
+
+saldoApos = Number(saldoApos) || 0;
+limiteDisponivel = Number(limiteDisponivel) || 0;
+ 
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
 
 let largura = 302;
@@ -2988,7 +2992,7 @@ Pgto. de conta em aberto
 <hr>
 
 Saldo Após Pagamento: R$ ${Number(saldoApos).toFixed(2)}<br>
-Limite Disponível: R$ ${Number(limiteApos).toFixed(2)}<br>
+Limite Disponível: R$ ${Number(limiteDisponivel).toFixed(2)}<br>
 
 <hr>
 
@@ -3281,6 +3285,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
