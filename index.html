@@ -501,6 +501,7 @@ style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px s
 <h1>Clientes</h1>
 
 <div class="card">
+<input type="text" id="pesquisaCliente" placeholder="Pesquisar cliente..." onkeyup="filtrarClientes()">
 <input id="cNome" placeholder="Nome do Cliente">
 <input id="cTelefone" placeholder="Telefone">
 <input id="cLimite" type="number" placeholder="Limite" value="500">
@@ -551,6 +552,26 @@ if(id==="historico") carregarHistoricoDoBanco();
 }
 
 
+
+function filtrarClientes(){
+
+let termo = document.getElementById("pesquisaCliente").value.toLowerCase();
+
+let linhas = document.querySelectorAll("#tabelaClientes tbody tr");
+
+linhas.forEach(linha => {
+
+let nome = linha.innerText.toLowerCase();
+
+linha.style.display = nome.includes(termo) ? "" : "none";
+
+});
+
+}
+
+
+
+ 
 
 
 async function buscarCliente(){
@@ -3011,7 +3032,13 @@ if(!pagamento){
   return;
 }
 
-imprimirComprovantePagamento(pagamento);
+imprimirComprovantePagamento(
+  pagamento.cliente,
+  pagamento.valor,
+  pagamento.forma_pagamento,
+  pagamento.numero_recibo,
+  true
+);
 
 }
  
@@ -3263,6 +3290,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
