@@ -2127,22 +2127,25 @@ async function verExtrato(clienteId){
 
   // 🔹 MONTAR EXTRATO
   let html = "";
+  let saldoAnterior = 0;
 
   movimentacoes.forEach(item => {
 
-    // 🔹 DEFINE COR
-    let cor = item.tipo === "credito" ? "#c62828" : "#1fa84f";
+    // 🔹 CALCULA VALOR DA LINHA PELO SALDO ANTERIOR
+    const valorLinha = item.saldo_apos - saldoAnterior;
+    saldoAnterior = item.saldo_apos;
+
+    // 🔹 DEFINE COR DO VALOR
+    let cor = valorLinha > 0 ? "#c62828" : "#1fa84f";
+
+    // 🔹 DEFINE COR DE FUNDO LEVE
+    let bgCor = valorLinha > 0 ? "rgba(198,40,40,0.05)" : "rgba(31,168,79,0.05)";
 
     // 🔹 DEFINE TEXTO COM ÍCONE
-    let descricaoFormatada = "";
-    if(item.tipo === "credito"){
-      descricaoFormatada = "🛒 Compra"; // crédito = compra
-    } else {
-      descricaoFormatada = "💰 Pagamento"; // débito = pagamento
-    }
+    let descricaoFormatada = valorLinha > 0 ? "🛒 Compra" : "💰 Pagamento";
 
     html += `
-      <tr>
+      <tr style="background-color: ${bgCor};">
         <td style="padding:8px;">
           ${new Date(item.data).toLocaleString()}
         </td>
@@ -2152,11 +2155,11 @@ async function verExtrato(clienteId){
         </td>
 
         <td style="padding:8px; color:${cor}; font-weight:bold;">
-          R$ ${item.tipo === "credito" ? Number(item.valor).toFixed(2) : (-Number(item.valor)).toFixed(2)}
+          R$ ${valorLinha.toFixed(2)}
         </td>
 
         <td style="padding:8px; font-weight:bold;">
-          R$ ${Number(item.saldo_apos).toFixed(2)}
+          R$ ${item.saldo_apos.toFixed(2)}
         </td>
       </tr>
     `;
@@ -2170,6 +2173,7 @@ async function verExtrato(clienteId){
 
   document.getElementById("modalExtrato").style.display = "flex";
 }
+ 
 
 function fecharExtrato(){
   document.getElementById("modalExtrato").style.display = "none";
@@ -3193,6 +3197,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
