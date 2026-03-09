@@ -994,7 +994,7 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   valor_recebido: 0,
   troco: 0,
   parcelas: 1,
-  tipo: "VENDA"
+  tipo: "CONTA_CLIENTE"
 }])
 .select()
 .single();
@@ -1920,16 +1920,31 @@ let cor = "#000";
 let valorFormatado = v.total.toFixed(2);
 
 if(v.tipo === "PAGAMENTO"){
-cor = "#1fa84f";
-valorFormatado = "- R$ " + valorFormatado;
-}else{
-valorFormatado = "R$ " + valorFormatado;
+  cor = "#1fa84f";
+  valorFormatado = "- R$ " + valorFormatado;
+}
+
+else if(v.tipo === "CONTA_CLIENTE"){
+  cor = "#e67e22";
+  valorFormatado = "R$ " + valorFormatado;
+}
+
+else{
+  valorFormatado = "R$ " + valorFormatado;
 }
 
 tHistorico.innerHTML+=`
 <tr>
 <td>${new Date(v.created_at).toLocaleString("pt-BR")}</td>
-<td>${v.tipo}</td>
+<td>
+${
+v.tipo === "VENDA" ? "Venda" :
+v.tipo === "ORCAMENTO" ? "Orçamento" :
+v.tipo === "CONTA_CLIENTE" ? "Conta Cliente" :
+v.tipo === "PAGAMENTO" ? "Pagamento Conta" :
+v.tipo
+}
+</td>
 <td>${v.nome_do_cliente || "Consumidor"}</td>
 <td style="color:${cor}; font-weight:bold;">
 ${valorFormatado}
@@ -1961,6 +1976,14 @@ ${v.tipo === "ORCAMENTO" ? `
 ` : ""}
 
 
+
+
+${v.tipo === "CONTA_CLIENTE" ? `
+<div class="tooltip">
+<button class="btn-small" onclick="reimprimirVenda('${v.id}')">🖨</button>
+<span class="tooltip-text">Reimprimir Venda</span>
+</div>
+` : ""}
 
 
 
@@ -3191,6 +3214,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
