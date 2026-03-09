@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<title>SISTEMA JB SANTOS</title>
+<title>Sistema JB Santos</title>
 <link rel="icon" type="image/png" href="iconejb.png">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2126,34 +2126,16 @@ async function verExtrato(clienteId){
   }
 
   // 🔹 MONTAR EXTRATO
-  let extrato = [];
-
-  movimentacoes.forEach(m => {
-    extrato.push({
-      data: m.data,
-      descricao: m.descricao,
-      valor: m.tipo === "credito" ? Number(m.valor) : -Number(m.valor)
-    });
-  });
-
-  // 🔹 ORDENAR POR DATA (opcional, já vem ordenado do supabase)
-  extrato.sort((a,b) => new Date(a.data) - new Date(b.data));
-
-  // 🔹 CALCULAR SALDO PROGRESSIVO
-  let saldo = 0;
   let html = "";
 
-  extrato.forEach(item => {
-
-    saldo += item.valor;
+  movimentacoes.forEach(item => {
 
     // 🔹 DEFINE COR
-    let cor = item.valor > 0 ? "#c62828" : "#1fa84f";
+    let cor = item.tipo === "credito" ? "#c62828" : "#1fa84f";
 
     // 🔹 DEFINE TEXTO COM ÍCONE
     let descricaoFormatada = "";
-
-    if(item.valor > 0){
+    if(item.tipo === "credito"){
       descricaoFormatada = "🛒 Compra"; // crédito = compra
     } else {
       descricaoFormatada = "💰 Pagamento"; // débito = pagamento
@@ -2170,18 +2152,20 @@ async function verExtrato(clienteId){
         </td>
 
         <td style="padding:8px; color:${cor}; font-weight:bold;">
-          R$ ${item.valor.toFixed(2)}
+          R$ ${item.tipo === "credito" ? Number(item.valor).toFixed(2) : (-Number(item.valor)).toFixed(2)}
         </td>
 
         <td style="padding:8px; font-weight:bold;">
-          R$ ${saldo.toFixed(2)}
+          R$ ${Number(item.saldo_apos).toFixed(2)}
         </td>
       </tr>
     `;
   });
 
   document.getElementById("extratoNome").innerText = cliente.nome;
-  document.getElementById("extratoSaldo").innerText = "R$ " + saldo.toFixed(2);
+  // Último saldo ou 0 se não houver movimentações
+  const saldoFinal = movimentacoes.length ? movimentacoes[movimentacoes.length - 1].saldo_apos : 0;
+  document.getElementById("extratoSaldo").innerText = "R$ " + saldoFinal.toFixed(2);
   document.getElementById("extratoTabela").innerHTML = html;
 
   document.getElementById("modalExtrato").style.display = "flex";
@@ -2192,7 +2176,7 @@ function fecharExtrato(){
 }
 
 
-
+ 
 async function cadastrarCliente(){
 
   let nome = cNome.value.trim();
@@ -3209,6 +3193,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
