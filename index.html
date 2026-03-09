@@ -2931,20 +2931,26 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroRecibo, dataPagamento, saldoApos, limiteDisponivel, reimpressao=false){
+function imprimirComprovantePagamento(
+cliente,
+valor,
+formaPagamento,
+numeroRecibo,
+saldoApos,
+limiteApos,
+dataPagamento,
+reimpressao=false
+){
 
 cliente = cliente || {nome:"Cliente"};
 
 valor = Number(valor) || 0;
 saldoApos = Number(saldoApos) || 0;
-limiteDisponivel = Number(limiteDisponivel) || 0;
-
-formaPagamento = formaPagamento || "Não informado";
-numeroRecibo = numeroRecibo || "00000000";
+limiteApos = Number(limiteApos) || 0;
 
 let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
 
-let data = dataPagamento 
+let data = dataPagamento
 ? new Date(dataPagamento).toLocaleString("pt-BR")
 : new Date().toLocaleString("pt-BR");
 
@@ -2964,13 +2970,7 @@ padding:10px;
 font-size:12px;
 }
 
-.center{
-text-align:center;
-}
-
-.right{
-text-align:right;
-}
+.center{text-align:center;}
 
 .row{
 display:flex;
@@ -3034,7 +3034,7 @@ Pgto. de conta em aberto
 
 <div class="row">
 <span>Limite disponível:</span>
-<span>R$ ${limiteDisponivel.toFixed(2)}</span>
+<span>R$ ${limiteApos.toFixed(2)}</span>
 </div>
 
 <hr>
@@ -3057,7 +3057,6 @@ Assinatura
 w.document.write(html);
 w.document.close();
 w.print();
-
 }
 
 
@@ -3334,6 +3333,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
