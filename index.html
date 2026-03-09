@@ -1048,15 +1048,18 @@ cliente.disponivel = novoDisponivel;
 
 
 // 🔥 4️⃣ Registrar extrato
+let saldoApos = cliente.saldo + total;
+
 await supabaseClient
-.from("movimentacoes_clientes")
-.insert([{
-  cliente_id: cliente.id,
-  data: new Date(),
-  descricao: "Venda na conta",
-  valor: total,
-  tipo: "debito"
-}]);
+  .from("movimentacoes_clientes")
+  .insert([{
+    cliente_id: cliente.id,
+    data: new Date(),
+    descricao: "🛒 Compra",
+    valor: total,
+    tipo: "debito",
+    saldo_apos: saldoApos
+  }]);
 
 
 await carregarClientes();
@@ -2436,7 +2439,7 @@ async function registrarPagamento(cliente, valor, formaPagamento){
   let saldoApos = cliente.saldo - valor;
   let limiteDisponivel = cliente.limite - saldoApos;
 
-  // 1️⃣ registrar pagamento
+  // 1️⃣ registrar pagamento na tabela "pagamentos"
   const { data, error } = await supabaseClient
     .from("pagamentos")
     .insert([{
@@ -2453,6 +2456,24 @@ async function registrarPagamento(cliente, valor, formaPagamento){
     console.error(error);
     alert("Erro ao registrar pagamento");
     return;
+  }
+
+  // 1️⃣b️⃣ registrar movimento na tabela "movimentacoes_clientes"
+  const { error: errorMov } = await supabaseClient
+    .from("movimentacoes_clientes")
+    .insert([{
+      cliente_id: cliente.id,
+      data: new Date(),
+      descricao: "💰 Pagamento",
+      valor: valor,
+      tipo: "credito",
+      saldo_apos: saldoApos
+    }]);
+
+  if(errorMov){
+    console.error(errorMov);
+    alert("Erro ao registrar movimentação do cliente");
+    // aqui você pode decidir se quer continuar ou não
   }
 
   // 2️⃣ atualizar cliente no banco
@@ -3208,6 +3229,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
