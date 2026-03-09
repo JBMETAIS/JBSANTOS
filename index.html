@@ -2052,7 +2052,9 @@ ${v.tipo === "CONTA_CLIENTE" ? `
 
 ${v.tipo === "PAGAMENTO_CONTA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirComprovantePagamento('${v.id}')">🧾</button>
+<button onclick="reimprimirComprovantePagamento(${venda.id})">
+🧾
+</button>
 <span class="tooltip-text">Reimprimir Comprovante</span>
 </div>
 ` : ""}
@@ -2389,48 +2391,22 @@ reimprimirCupomVenda(venda);
  
 async function reimprimirUltimaVenda(clienteId){
 
-  const { data, error } = await supabaseClient
-    .from("vendas")
-    .select(`
-      *,
-      itens_venda (
-        quantidade,
-        preco_unitario,
-        produtos (
-          produto
-        )
-      )
-    `)
-    .eq("cliente_id", clienteId)
-    .order("id", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+const { data, error } = await supabase
+.from("vendas")
+.select("*")
+.eq("cliente_id", clienteId)
+.order("id", { ascending: false })
+.limit(1)
+.single();
 
-  if(error || !data){
-    console.error(error);
-    alert("Nenhuma venda encontrada para este cliente.");
-    return;
-  }
+if(error || !data){
+ alert("Nenhuma venda encontrada para este cliente");
+ return;
+}
 
-  let vendaFormatada = {
-    pedido: data.numero_venda,
-    cliente: data.nome_do_cliente || "Consumidor",
-    data: new Date(data.created_at).toLocaleString("pt-BR"),
-    total: data.total,
-    desconto: data.desconto || 0,
-    pagamento: data.forma_pagamento,
-    valorRecebido: data.valor_recebido || 0,
-    troco: data.troco || 0,
-    parcelas: data.parcelas || 1,
+// chama a mesma função usada no PDV
+imprimirCupom(data.total, "REIMPRESSÃO", data);
 
-    itens: data.itens_venda.map(item => ({
-      nome: item.produtos.produto,
-      qtd: item.quantidade,
-      preco: item.preco_unitario
-    }))
-  };
-
-  imprimirCupom(vendaFormatada.total,"REIMPRESSÃO",vendaFormatada);
 }
  
  
@@ -3032,21 +3008,21 @@ w.print();
 
 
 
-async function reimprimirComprovantePagamento(id){
+function reimprimirComprovantePagamento(id){
 
 let pagamento = vendas.find(v => v.id === id);
 
 if(!pagamento){
-  alert("Pagamento não encontrado");
-  return;
+ alert("Pagamento não encontrado");
+ return;
 }
 
 imprimirComprovantePagamento(
-  pagamento.cliente,
-  pagamento.valor,
-  pagamento.forma_pagamento,
-  pagamento.numero_recibo,
-  true
+ pagamento.cliente,
+ pagamento.valor,
+ pagamento.forma_pagamento,
+ pagamento.recibo,
+ true
 );
 
 }
@@ -3299,6 +3275,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
