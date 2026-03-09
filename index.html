@@ -1047,18 +1047,16 @@ cliente.saldo = novoSaldo;
 cliente.disponivel = novoDisponivel;
 
 
-// 🔥 4️⃣ Registrar extrato
-let saldoApos = cliente.saldo + total;
-
+// 🔥 4️⃣ Registrar extrato corretamente
 await supabaseClient
   .from("movimentacoes_clientes")
   .insert([{
     cliente_id: cliente.id,
     data: new Date(),
     descricao: "🛒 Compra",
-    valor: total,
-    tipo: "debito",
-    saldo_apos: saldoApos
+    valor: total,            // valor real da venda
+    tipo: "credito",         // crédito = compra
+    saldo_apos: cliente.saldo // saldo real do cliente após a venda
   }]);
 
 
@@ -3195,6 +3193,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
