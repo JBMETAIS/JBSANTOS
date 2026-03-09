@@ -1919,6 +1919,7 @@ tHistorico.innerHTML=`
 let cor = "#000";
 let valorFormatado = v.total.toFixed(2);
 
+// cores por tipo
 if(v.tipo === "PAGAMENTO"){
   cor = "#1fa84f";
   valorFormatado = "- R$ " + valorFormatado;
@@ -1929,26 +1930,33 @@ else if(v.tipo === "CONTA_CLIENTE"){
   valorFormatado = "R$ " + valorFormatado;
 }
 
+else if(v.tipo === "ORCAMENTO"){
+  cor = "#2d7ff9";
+  valorFormatado = "R$ " + valorFormatado;
+}
+
 else{
   valorFormatado = "R$ " + valorFormatado;
 }
 
+// nome + icone do tipo
+let tipoFormatado =
+v.tipo === "VENDA" ? "🧾 Venda" :
+v.tipo === "ORCAMENTO" ? "📄 Orçamento" :
+v.tipo === "CONTA_CLIENTE" ? "📒 Conta Cliente" :
+v.tipo === "PAGAMENTO" ? "💰 Pagamento Conta" :
+v.tipo;
+
 tHistorico.innerHTML+=`
 <tr>
 <td>${new Date(v.created_at).toLocaleString("pt-BR")}</td>
-<td>
-${
-v.tipo === "VENDA" ? "Venda" :
-v.tipo === "ORCAMENTO" ? "Orçamento" :
-v.tipo === "CONTA_CLIENTE" ? "Conta Cliente" :
-v.tipo === "PAGAMENTO" ? "Pagamento Conta" :
-v.tipo
-}
-</td>
+<td>${tipoFormatado}</td>
 <td>${v.nome_do_cliente || "Consumidor"}</td>
+
 <td style="color:${cor}; font-weight:bold;">
 ${valorFormatado}
 </td>
+
 <td>
 <div class="btn-group">
 
@@ -1966,17 +1974,12 @@ ${v.tipo === "ORCAMENTO" ? `
 </div>
 ` : ""}
 
-
-
 ${v.tipo === "ORCAMENTO" ? `
 <div class="tooltip">
 <button class="btn-small" onclick="converterOrcamento('${v.id}')">💰</button>
 <span class="tooltip-text">Converter Orçamento</span>
 </div>
 ` : ""}
-
-
-
 
 ${v.tipo === "CONTA_CLIENTE" ? `
 <div class="tooltip">
@@ -1985,17 +1988,12 @@ ${v.tipo === "CONTA_CLIENTE" ? `
 </div>
 ` : ""}
 
-
-
 ${v.tipo === "PAGAMENTO" ? `
 <div class="tooltip">
 <button class="btn-small" onclick="reimprimirComprovantePagamento(${index})">🧾</button>
 <span class="tooltip-text">Reimprimir Comprovante</span>
 </div>
 ` : ""}
-
-
-
 
 <div class="tooltip">
 <button class="btn-small red" onclick="excluirVenda('${v.id}')">🗑</button>
@@ -3214,6 +3212,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
