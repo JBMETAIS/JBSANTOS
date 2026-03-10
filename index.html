@@ -2517,6 +2517,7 @@ async function reimprimirUltimaVenda(clienteId){
         quantidade,
         preco_unitario,
         produtos (
+          codigo,
           produto
         )
       )
@@ -2544,6 +2545,7 @@ async function reimprimirUltimaVenda(clienteId){
     parcelas: data.parcelas || 1,
 
     itens: data.itens_venda.map(item => ({
+      codigo: item.produtos.codigo, 
       nome: item.produtos.produto,
       qtd: item.quantidade,
       preco: item.preco_unitario
@@ -3447,6 +3449,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
