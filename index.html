@@ -2135,7 +2135,7 @@ ${v.tipo === "CONTA_CLIENTE" ? `
 
 ${v.tipo === "PAGAMENTO_CONTA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick="reimprimirComprovantePagamento('${v.id}')">🧾</button>
+<button class="btn-small" onclick='reimprimirComprovantePagamento(${JSON.stringify(v)})'>🧾</button>
 <span class="tooltip-text">Reimprimir Comprovante</span>
 </div>
 ` : ""}
@@ -3045,8 +3045,10 @@ function imprimirComprovantePagamento(cliente, valor, formaPagamento, numeroReci
 let saldoApos = cliente.saldo;
 let disponivel = cliente.limite - saldoApos;
 
-let recibo = String(numeroRecibo).substring(0,8).toUpperCase();
-
+let recibo = numeroRecibo
+ ? "REC-" + String(numeroRecibo).padStart(5,"0")
+ : "REC-00000";
+ 
 let largura = 302;
 let w = window.open("", "", `width=${largura},height=600`);
 
@@ -3173,11 +3175,7 @@ w.print();
 }
 
 
-async function reimprimirComprovantePagamento(id){
-
-id = Number(id);
-
-let pagamento = vendas.find(v => Number(v.id) === id);
+async function reimprimirComprovantePagamento(pagamento){
 
 if(!pagamento){
   alert("Pagamento não encontrado");
@@ -3199,6 +3197,7 @@ imprimirComprovantePagamento(
 );
 
 }
+ 
  
 
 function verificarFormaPagamentoModal(){
@@ -3448,6 +3447,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
