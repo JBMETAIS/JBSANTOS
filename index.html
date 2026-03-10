@@ -2135,7 +2135,7 @@ ${v.tipo === "CONTA_CLIENTE" ? `
 
 ${v.tipo === "PAGAMENTO_CONTA" ? `
 <div class="tooltip">
-<button class="btn-small" onclick='reimprimirComprovantePagamento(${JSON.stringify(v)})'>🧾</button>
+<button class="btn-small" onclick="reimprimirComprovantePagamento('${v.id}')">🧾</button>
 <span class="tooltip-text">Reimprimir Comprovante</span>
 </div>
 ` : ""}
@@ -3039,14 +3039,25 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function reimprimirComprovantePagamento(pagamento){
+async function reimprimirComprovantePagamento(id){
 
-if(!pagamento.comprovante_html){
+const { data, error } = await supabaseClient
+.from("pagamentos")
+.select("comprovante_html")
+.eq("id", id)
+.single();
+
+if(error || !data){
+alert("Pagamento não encontrado");
+return;
+}
+
+if(!data.comprovante_html){
 alert("Comprovante não encontrado");
 return;
 }
 
-imprimirHtml(pagamento.comprovante_html);
+imprimirHtml(data.comprovante_html);
 
 }
  
@@ -3403,6 +3414,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
