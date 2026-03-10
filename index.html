@@ -1246,16 +1246,27 @@ await carregarClientes();
 
 function limparCamposVenda(){
 
-document.getElementById("clienteNome")?.value = "";
-document.getElementById("telefoneCliente")?.value = "";
-document.getElementById("formaPagamento")?.value = "dinheiro";
-document.getElementById("valorRecebido")?.value = "";
-document.getElementById("troco")?.value = "";
+let nome = document.getElementById("clienteNome");
+if(nome) nome.value = "";
+
+let telefone = document.getElementById("telefoneCliente");
+if(telefone) telefone.value = "";
+
+let pagamento = document.getElementById("formaPagamento");
+if(pagamento) pagamento.value = "dinheiro";
+
+let valorRecebido = document.getElementById("valorRecebido");
+if(valorRecebido) valorRecebido.value = "";
+
+let troco = document.getElementById("troco");
+if(troco) troco.value = "";
 
 let parcelas = document.getElementById("parcelas");
 if(parcelas) parcelas.value = 1;
 
-document.getElementById("codigoProduto")?.focus();
+let codigo = document.getElementById("codigoProduto");
+if(codigo) codigo.focus();
+
 }
 
 
@@ -3476,6 +3487,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
