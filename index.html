@@ -1123,7 +1123,8 @@ descontoAtual = 0;
 
 atualizarCarrinho();
 atualizarClientes();
-
+limparCamposVenda();
+ 
 return; // 🔥 impede impressão de cupom
 }
 
@@ -1228,16 +1229,37 @@ if(formaPagamento !== "conta"){
 
 alert("Venda finalizada com sucesso!");
 
+
 carrinho = [];
 descontoAtual = 0;
 
 atualizarCarrinho();
 atualizarClientes();
-
+limparCamposVenda(); 
+ 
 await carregarHistoricoDoBanco();
 await carregarClientes();
  
 }
+
+
+
+function limparCamposVenda(){
+
+document.getElementById("clienteNome")?.value = "";
+document.getElementById("telefoneCliente")?.value = "";
+document.getElementById("formaPagamento")?.value = "dinheiro";
+document.getElementById("valorRecebido")?.value = "";
+document.getElementById("troco")?.value = "";
+
+let parcelas = document.getElementById("parcelas");
+if(parcelas) parcelas.value = 1;
+
+document.getElementById("codigoProduto")?.focus();
+}
+
+
+
 
  
 
@@ -1707,7 +1729,10 @@ console.log("Valor do select:", parcelas.value);
 
   orcamentoEmEdicaoId = null;
   carrinho = [];
+ 
   atualizarCarrinho();
+  atualizarClientes();
+  limparCamposVenda();
 }
 
 
@@ -3451,6 +3476,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
