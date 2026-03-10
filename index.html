@@ -2525,7 +2525,7 @@ async function reimprimirUltimaVenda(clienteId){
       )
     `)
     .eq("cliente_id", clienteId)
-    .order("id", { ascending: false })
+    .order("created_at", { ascending: false, nullsFirst: false }) 
     .limit(1)
     .maybeSingle();
 
@@ -3451,6 +3451,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
