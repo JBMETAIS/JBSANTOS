@@ -1148,12 +1148,17 @@ let numeroPedido = "00001";
 if(ultimaVenda){
 numeroPedido = String(Number(ultimaVenda.numero_venda)+1).padStart(5,"0");
 }
+
+
+let clienteSelecionado = clientes.find(
+  c => c.nome.toLowerCase() === clienteNome.toLowerCase()
+);
  
 const { data: vendaCriada, error: erroVenda } = await supabaseClient
 .from("vendas")
 .insert([{
   numero_venda: numeroPedido,
-  cliente_id: null,
+  cliente_id: clienteSelecionado ? clienteSelecionado.id : null,
   nome_do_cliente: clienteNome,
   telefone_do_cliente: telefoneCliente,
   forma_pagamento: formaPagamento,
@@ -3085,7 +3090,7 @@ alert("Pagamento não encontrado");
 return;
 }
 
-imprimirHtml(data.comprovante_html);
+imprimirHtml("<h3>SEGUNDA VIA DO COMPROVANTE</h3>" + data.comprovante_html);
 
 }
  
@@ -3442,6 +3447,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
