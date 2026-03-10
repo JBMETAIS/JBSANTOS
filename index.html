@@ -1050,7 +1050,7 @@ if (erroVenda) {
   return;
 }
 
-const vendaIdBanco = vendaCriada.id;
+const vendaContaId = vendaCriada.id;
 
 
 // 🔥 2️⃣ Inserir itens
@@ -1061,7 +1061,7 @@ for (let item of carrinho) {
   await supabaseClient
   .from("itens_venda")
   .insert([{
-    venda_id: vendaIdBanco,
+    venda_id: vendaContaId,
     produto_id: produto.id,
     quantidade: item.qtd,
     preco_unitario: item.preco
@@ -1176,12 +1176,12 @@ const { data: vendaNormalCriada, error: erroVendaNormal } = await supabaseClient
 .single();
 
 if (erroVendaNormal) {
-  console.error(erroVenda);
+  console.error(erroVendaNormal);
   alert("Erro ao salvar venda!");
   return;
 }
 
-const vendaIdBanco = vendaNormalCriada.id;
+const vendaNormalId = vendaNormalCriada.id;
 
 
 // inserir itens
@@ -1192,7 +1192,7 @@ for (let item of carrinho) {
   const { error: erroItem } = await supabaseClient
   .from("itens_venda")
   .insert([{
-    venda_id: vendaIdBanco,
+    venda_id: vendaNormalId,
     produto_id: produto.id,
     quantidade: item.qtd,
     preco_unitario: item.preco
@@ -3484,6 +3484,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
