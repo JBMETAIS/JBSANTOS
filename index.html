@@ -2566,11 +2566,9 @@ setTimeout(() => {
 
 async function registrarPagamento(cliente, valor, formaPagamento){
 
-  // calcular novos valores
   let saldoApos = cliente.saldo - valor;
   let limiteDisponivel = cliente.limite - saldoApos;
 
-  // 1️⃣ registrar pagamento na tabela "pagamentos"
   const { data, error } = await supabaseClient
     .from("pagamentos")
     .insert([{
@@ -2589,8 +2587,17 @@ async function registrarPagamento(cliente, valor, formaPagamento){
     return;
   }
 
-  // 1️⃣b️⃣ registrar movimento na tabela "movimentacoes_clientes"
-  const { error: errorMov } = await supabaseClient
+  // gerar comprovante HTML
+  const html = gerarHtmlComprovantePagamento(data, cliente.nome);
+
+  // salvar comprovante no banco
+  await supabaseClient
+    .from("pagamentos")
+    .update({ comprovante_html: html })
+    .eq("id", data.id);
+
+  // registrar movimentação
+  await supabaseClient
     .from("movimentacoes_clientes")
     .insert([{
       cliente_id: cliente.id,
@@ -2601,34 +2608,24 @@ async function registrarPagamento(cliente, valor, formaPagamento){
       saldo_apos: saldoApos
     }]);
 
-  if(errorMov){
-    console.error(errorMov);
-    alert("Erro ao registrar movimentação do cliente");
-    // aqui você pode decidir se quer continuar ou não
-  }
+  // registrar no histórico geral
+  await supabaseClient
+    .from("vendas")
+    .insert([{
+      numero_venda: null,
+      cliente_id: cliente.id,
+      nome_do_cliente: cliente.nome,
+      forma_pagamento: formaPagamento,
+      subtotal: valor,
+      desconto: 0,
+      total: valor,
+      valor_recebido: valor,
+      troco: 0,
+      parcelas: 1,
+      tipo: "PAGAMENTO_CONTA"
+    }]);
 
-
-
-// 1️⃣c️⃣ registrar no histórico geral (tabela vendas)
-await supabaseClient
-.from("vendas")
-.insert([{
-  numero_venda: null,
-  cliente_id: cliente.id,
-  nome_do_cliente: cliente.nome,
-  forma_pagamento: formaPagamento,
-  subtotal: valor,
-  desconto: 0,
-  total: valor,
-  valor_recebido: valor,
-  troco: 0,
-  parcelas: 1,
-  tipo: "PAGAMENTO_CONTA"
-}]);
- 
-
- 
-  // 2️⃣ atualizar cliente no banco
+  // atualizar cliente
   await supabaseClient
     .from("clientes")
     .update({
@@ -2637,20 +2634,16 @@ await supabaseClient
     })
     .eq("id", cliente.id);
 
-  // 3️⃣ atualizar objeto cliente local
   cliente.saldo = saldoApos;
   cliente.disponivel = limiteDisponivel;
 
-  // 4️⃣ agora sim imprimir comprovante
-  imprimirComprovantePagamento(
-    cliente,
-    valor,
-    formaPagamento,
-    data.id
-  );
+  // imprimir comprovante salvo
+  imprimirHtml(html);
 
 }
 
+
+ 
  
 
 async function gerarComprovante(pagamento){
@@ -3046,49 +3039,44 @@ alert("Orçamento carregado para edição ✏️");
 
  
 
-function imprimirComprovantePagamento(pagamento, reimpressao=false){
+function reimprimirComprovantePagamento(pagamento){
 
-let saldoApos = Number(pagamento.saldo_apos || 0);
-let limiteDisp = Number(pagamento.limite_apos || 0);
+  if(!pagamento.comprovante_html){
+    alert("Comprovante não encontrado");
+    return;
+  }
 
-let recibo = pagamento.id
- ? String(pagamento.id).replace(/[^0-9]/g,"").slice(-6).padStart(6,"0")
- : "000000";
+  imprimirHtml(pagamento.comprovante_html);
 
-let dataPg = pagamento.criado_em
- ? new Date(pagamento.criado_em).toLocaleString("pt-BR")
- : new Date().toLocaleString("pt-BR");
+}
+ 
 
-let clienteNome =
-pagamento.clientes?.nome ||
-pagamento.cliente_nome ||
-pagamento.nome ||
-"Cliente";
 
-let valor = Number(pagamento.valor || 0);
+function gerarHtmlComprovantePagamento(pagamento, clienteNome, reimpressao=false){
 
-let forma = pagamento.forma_pagamento || "Dinheiro";
+  let saldoApos = Number(pagamento.saldo_apos || 0);
+  let limiteDisp = Number(pagamento.limite_apos || 0);
 
-let largura = 302;
-let w = window.open("", "", `width=${largura},height=600`);
+  let recibo = pagamento.id
+    ? String(pagamento.id).replace(/[^0-9]/g,"").slice(-6).padStart(6,"0")
+    : "000000";
 
-let html = `
+  let dataPg = pagamento.criado_em
+    ? new Date(pagamento.criado_em).toLocaleString("pt-BR")
+    : new Date().toLocaleString("pt-BR");
+
+  let valor = Number(pagamento.valor || 0);
+  let forma = pagamento.forma_pagamento || "Dinheiro";
+
+  return `
 <html>
 <head>
 <style>
-body{
-font-family: monospace;
-width:280px;
-margin:0;
-padding:10px;
-font-size:12px;
-}
+body{font-family:monospace;width:280px;padding:10px;font-size:12px;}
 .center{text-align:center;}
-.titulo{font-size:14px;font-weight:bold;}
-.valor{font-size:14px;font-weight:bold;}
 .linha{display:flex;justify-content:space-between;}
 hr{border:none;border-top:1px dashed #000;margin:6px 0;}
-small{font-size:10px;}
+.valor{font-weight:bold;font-size:14px;}
 </style>
 </head>
 
@@ -3096,7 +3084,7 @@ small{font-size:10px;}
 
 <div class="center">
 ${reimpressao ? "<strong>REIMPRESSÃO</strong><br>" : ""}
-<div class="titulo">COMPROVANTE DE PAGAMENTO</div>
+<b>COMPROVANTE DE PAGAMENTO</b><br>
 Recibo Nº: ${recibo}<br><br>
 
 <strong>${config.nome || "JB SANTOS"}</strong><br>
@@ -3129,12 +3117,6 @@ ${config.telefone || ""}<br>
 <span>R$ ${valor.toFixed(2)}</span>
 </div>
 
-<br>
-
-<div class="center">
-Pgto. de conta em aberto
-</div>
-
 <hr>
 
 <div class="linha">
@@ -3151,41 +3133,27 @@ Pgto. de conta em aberto
 
 <div class="center">
 Pagamento registrado com sucesso<br><br>
-Assinatura:<br><br>
 ________________________
-</div>
-
-<br>
-
-<div class="center">
-<small>Documento não fiscal</small>
 </div>
 
 </body>
 </html>
 `;
-
-w.document.write(html);
-w.document.close();
-w.print();
-
 }
 
  
 
-function reimprimirComprovantePagamento(index){
+function imprimirHtml(html){
 
-let pagamento = pagamentos[index];
+  let largura = 302;
+  let w = window.open("", "", `width=${largura},height=600`);
 
-if(!pagamento){
-alert("Pagamento não encontrado");
-return;
-}
-
-imprimirComprovantePagamento(pagamento, true);
+  w.document.write(html);
+  w.document.close();
+  w.print();
 
 }
- 
+
  
 
 function verificarFormaPagamentoModal(){
@@ -3435,6 +3403,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 </body>
 </html>
+
 
 
 
