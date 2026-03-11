@@ -3560,11 +3560,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 async function mostrarUsuario(){
 
-  const { data } = await supabaseClient.auth.getUser();
+  const { data: userData } = await supabaseClient.auth.getUser();
 
-  if(data.user){
+  if(!userData.user) return;
+
+  const userId = userData.user.id;
+
+  const { data } = await supabaseClient
+  .from("usuarios")
+  .select("nome")
+  .eq("id", userId)
+  .single();
+
+  if(data){
     document.getElementById("usuario-logado").innerText =
-      "👤 " + data.user.email;
+      "👤 " + data.nome;
   }
 
 }
@@ -3586,6 +3596,7 @@ async function logout(){
 
 </body>
 </html>
+
 
 
 
