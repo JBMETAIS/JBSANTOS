@@ -42,6 +42,14 @@ async function verificarLogin() {
 verificarLogin();
 </script>
 
+
+
+
+
+
+
+
+  
 <style>
 
 @media print {
@@ -429,6 +437,18 @@ box-shadow:0 4px 10px rgba(0,0,0,0.4);
 .menu-btn:hover{
     background: #2c2c2c;
 }
+
+
+
+#tHistorico thead th{
+  position: sticky;
+  top: 0;
+  background: #000;
+  z-index: 100;
+}
+
+
+  
 </style>
 </head>
 
@@ -586,29 +606,22 @@ style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px s
 </section>
 
 <table id="tHistorico">
-  <thead>
-    <tr>
-      <th>Data</th>
-      <th>Tipo</th>
-      <th>Cliente</th>
-      <th>Valor</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
 
-  <tbody id="corpoHistorico">
-  </tbody>
+<thead>
+<tr>
+<th>Data</th>
+<th>Tipo</th>
+<th>Cliente</th>
+<th>Valor</th>
+<th>Ações</th>
+</tr>
+</thead>
+
+<tbody id="bodyHistorico">
+</tbody>
+
 </table>
 
-  #tHistorico thead th{
-  position: sticky;
-  top: 0;
-  background: #000;
-  z-index: 10;
-}
-
-  
-</section>
 <section id="config" style="display:none">
 <h1>Configurações da Empresa</h1>
 <div class="card">
@@ -3623,68 +3636,3 @@ async function logout(){
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
