@@ -5,6 +5,13 @@
 <title>Sistema JB Santos</title>
 
 <link rel="icon" href="/favicon.png" type="image/png">
+
+
+<style>
+body{
+  visibility: hidden;
+}
+</style>
  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
  
@@ -21,12 +28,14 @@ async function verificarLogin() {
     const { data } = await supabaseClient.auth.getSession();
 
     if (!data.session) {
-      window.location.href = "login.html";
+      window.location.replace("login.html");
+    } else {
+      document.body.style.visibility = "visible";
     }
 
   } catch (error) {
     console.error("Erro ao verificar login:", error);
-    window.location.href = "login.html";
+    window.location.replace("login.html");
   }
 }
 
@@ -3586,8 +3595,12 @@ mostrarUsuario();
   
   
 async function logout(){
-  await supabaseClient.auth.signOut();
-  window.location.replace("login.html");
+  try{
+    await supabaseClient.auth.signOut();
+    window.location.replace("login.html");
+  }catch(error){
+    console.error("Erro ao sair:", error);
+  }
 }
 
 
@@ -3599,6 +3612,7 @@ async function logout(){
 
 </body>
 </html>
+
 
 
 
