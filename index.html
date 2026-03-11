@@ -7,6 +7,24 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+ 
+<script>
+const SUPABASE_URL = "https://mvjhvzzuijrlzrzmywcl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_9KqHb2QZvr6HbT6UUZWJXQ_PGvdHHD_";
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+async function verificarLogin() {
+  const { data } = await supabaseClient.auth.getSession();
+
+  if (!data.session) {
+    window.location.href = "login.html";
+  }
+}
+
+verificarLogin();
+</script>
+
 <style>
 
 @media print {
@@ -330,14 +348,71 @@ transform:scale(1.05);
 }
 
 
+.botao-logout{
+position:fixed;
 
+top:20px;
+right:25px;
 
+background:#c62828;
+color:#fff;
+
+border:0;
+padding:10px 18px;
+
+border-radius:8px;
+font-weight:bold;
+
+cursor:pointer;
+
+z-index:999;
+transition:0.2s;
+}
+
+.botao-logout:hover{
+transform:scale(1.05);
+box-shadow:0 4px 10px rgba(0,0,0,0.4);
+}
+
+ .topo-usuario{
+position:fixed;
+
+top:20px;
+right:25px;
+
+display:flex;
+align-items:center;
+gap:15px;
+
+color:white;
+font-weight:bold;
+
+z-index:999;
+}
+
+.botao-logout{
+background:#c62828;
+color:#fff;
+
+border:0;
+padding:8px 16px;
+
+border-radius:6px;
+
+cursor:pointer;
+font-weight:bold;
+}
 
 </style>
 </head>
 
 <body>
 
+<div class="topo-usuario">
+<span id="usuario-logado"></span>
+<button class="botao-logout" onclick="logout()">Sair</button>
+</div>
+ 
 <div class="app">
 
 <div class="sidebar">
@@ -3481,12 +3556,37 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnSalvar").addEventListener("click", salvarConfig);
 });
 
+
+
+async function mostrarUsuario(){
+
+  const { data } = await supabaseClient.auth.getUser();
+
+  if(data.user){
+    document.getElementById("usuario-logado").innerText =
+      "👤 " + data.user.email;
+  }
+
+}
+
+mostrarUsuario();
+  
+  
+async function logout(){
+  await supabaseClient.auth.signOut();
+  window.location.href = "login.html";
+}
+
+
+  
+  
 </script>
 
  
 
 </body>
 </html>
+
 
 
 
