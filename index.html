@@ -371,15 +371,10 @@ box-shadow:0 4px 10px rgba(0,0,0,0.4);
 }
 
 .top-right{
-    position: fixed;
-    top: 15px;
-    right: 20px;
-
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    z-index: 1000;
+backdrop-filter: blur(6px);
+background: rgba(0,0,0,0.35);
+padding:6px 12px;
+border-radius:12px;
 }
 
 
@@ -3598,4 +3593,5 @@ async function logout(){
 
 </body>
 </html>
+
 
