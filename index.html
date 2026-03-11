@@ -42,14 +42,6 @@ async function verificarLogin() {
 verificarLogin();
 </script>
 
-
-
-
-
-
-
-
-  
 <style>
 
 @media print {
@@ -437,18 +429,6 @@ box-shadow:0 4px 10px rgba(0,0,0,0.4);
 .menu-btn:hover{
     background: #2c2c2c;
 }
-
-
-
-#tHistorico thead th{
-  position: sticky;
-  top: 0;
-  background: #000;
-  z-index: 100;
-}
-
-
-  
 </style>
 </head>
 
@@ -605,22 +585,18 @@ style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px s
 <table id="tEstoque"></table>
 </section>
 
-<table id="tHistorico">
+<section id="historico" style="display:none">
+<h1>Histórico</h1>
 
-<thead>
-<tr>
-<th>Data</th>
-<th>Tipo</th>
-<th>Cliente</th>
-<th>Valor</th>
-<th>Ações</th>
-</tr>
-</thead>
+<input 
+id="pesquisaHistorico"
+placeholder="Pesquisar cliente, tipo ou valor..."
+oninput="filtrarHistorico()"
+style="padding:8px;width:300px;margin-bottom:10px;border-radius:6px;border:1px solid #ccc;"
+>
 
-<tbody id="bodyHistorico">
-</tbody>
-
-</table>
+<table id="tHistorico"></table>
+</section>
 
 <section id="config" style="display:none">
 <h1>Configurações da Empresa</h1>
