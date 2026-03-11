@@ -365,32 +365,42 @@ transform:scale(1.05);
 }
 
 
+.botao-logout{
+position:fixed;
+
+top:20px;
+right:25px;
+
+background:#c62828;
+color:#fff;
+
+border:0;
+padding:10px 18px;
+
+border-radius:8px;
+font-weight:bold;
+
+cursor:pointer;
+
+z-index:999;
+transition:0.2s;
+}
+
 .botao-logout:hover{
 transform:scale(1.05);
 box-shadow:0 4px 10px rgba(0,0,0,0.4);
 }
 
-
-body{
-    margin:0;
-    padding:0;
-    background-attachment: fixed;
-    background-size: cover;
-}
-  
 .top-right{
-    position: fixed;
+    position: absolute;
     top: 15px;
     right: 20px;
 
     display: flex;
     align-items: center;
     gap: 10px;
-
-    z-index: 1000;
 }
 
-  
 .usuario{
     color: white;
     display: flex;
@@ -420,6 +430,12 @@ body{
     background: #2c2c2c;
 }
 
+#tHistorico thead th{
+position: sticky;
+top: 70px;
+background: #000;
+z-index: 10;
+}
   
 </style>
 </head>
@@ -577,17 +593,22 @@ style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px s
 <table id="tEstoque"></table>
 </section>
 
-<section id="historico" style="display:none">
-<h1>Histórico</h1>
+<table id="tHistorico">
 
-<input 
-id="pesquisaHistorico"
-placeholder="Pesquisar cliente, tipo ou valor..."
-oninput="filtrarHistorico()"
-style="padding:8px;width:300px;margin-bottom:10px;border-radius:6px;border:1px solid #ccc;"
->
+<thead>
+<tr>
+<th>Data</th>
+<th>Tipo</th>
+<th>Cliente</th>
+<th>Valor</th>
+<th>Ações</th>
+</tr>
+</thead>
 
-<table id="tHistorico"></table>
+<tbody id="corpoHistorico">
+</tbody>
+
+</table>
 </section>
 
 <section id="config" style="display:none">
@@ -3604,15 +3625,3 @@ async function logout(){
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
