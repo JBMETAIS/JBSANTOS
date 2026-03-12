@@ -434,7 +434,7 @@ box-shadow:0 4px 10px rgba(0,0,0,0.4);
 
 <body>
 
-<div class="top-right">
+<div id="topUser" class="top-right">
     <div class="usuario">
         <span id="usuario-logado"></span>
     </div>
@@ -3573,7 +3573,6 @@ document.addEventListener("DOMContentLoaded", () => {
 async function mostrarUsuario(){
 
   const { data: userData } = await supabaseClient.auth.getUser();
-
   if(!userData.user) return;
 
   const userId = userData.user.id;
@@ -3587,6 +3586,17 @@ async function mostrarUsuario(){
   if(data){
     document.getElementById("usuario-logado").innerText =
       "👤 " + data.nome;
+  }
+
+  /* só mostrar na tela inicial */
+
+  const historicoVisivel =
+    document.getElementById("historico").style.display !== "none";
+
+  if(historicoVisivel){
+      document.getElementById("topUser").style.display = "none";
+  }else{
+      document.getElementById("topUser").style.display = "flex";
   }
 
 }
@@ -3612,3 +3622,4 @@ async function logout(){
 
 </body>
 </html>
+
