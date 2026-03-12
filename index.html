@@ -3614,19 +3614,19 @@ async function logout(){
 }
 
 
-  setInterval(() => {
+ setInterval(() => {
 
-  const historico = document.getElementById("historico");
+  const inicio = document.getElementById("inicio");
   const topUser = document.getElementById("topUser");
 
-  if(!historico || !topUser) return;
+  if(!inicio || !topUser) return;
 
-  const visivel = window.getComputedStyle(historico).display !== "none";
+  const inicioVisivel = window.getComputedStyle(inicio).display !== "none";
 
-  if(visivel){
-    topUser.style.display = "none";
-  }else{
+  if(inicioVisivel){
     topUser.style.display = "flex";
+  }else{
+    topUser.style.display = "none";
   }
 
 }, 300);
@@ -3637,5 +3637,6 @@ async function logout(){
 
 </body>
 </html>
+
 
 
