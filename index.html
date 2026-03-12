@@ -3614,7 +3614,22 @@ async function logout(){
 }
 
 
-  
+  setInterval(() => {
+
+  const historico = document.getElementById("historico");
+  const topUser = document.getElementById("topUser");
+
+  if(!historico || !topUser) return;
+
+  const visivel = window.getComputedStyle(historico).display !== "none";
+
+  if(visivel){
+    topUser.style.display = "none";
+  }else{
+    topUser.style.display = "flex";
+  }
+
+}, 300);
   
 </script>
 
@@ -3622,4 +3637,5 @@ async function logout(){
 
 </body>
 </html>
+
 
