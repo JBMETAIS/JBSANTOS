@@ -1845,10 +1845,17 @@ const { data: empresa } = await supabaseClient
 
 const emp = empresa || {};
 
-
 let dataBase = orc.data || orc.created_at || orc.data_venda || Date.now();
-let dataOrc = new Date(dataBase).toLocaleDateString("pt-BR");
-dataOrc = new Date(dataOrc).toLocaleDateString();
+
+let dataOrc = new Date(dataBase);
+
+if (isNaN(dataOrc)) {
+  dataOrc = new Date();
+}
+
+dataOrc = dataOrc.toLocaleDateString("pt-BR");
+
+
 
   
 let cliente =
