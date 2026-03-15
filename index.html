@@ -776,7 +776,28 @@ oninput="atualizarEstoque()"
 style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px solid #ccc;"
 >
 
+<div id="resumoEstoque" style="
+display:flex;
+gap:30px;
+margin:15px 0;
+font-weight:bold;
+color:#ff8c2a;
+">
+
+<div>
+📦 Itens em estoque: 
+<span id="totalItensEstoque">0</span>
+</div>
+
+<div>
+💰 Valor total do estoque: 
+<span id="valorEstoque">R$ 0.00</span>
+</div>
+
+</div>
+
 <table id="tEstoque"></table>
+
 </section>
 
 <section id="historico" style="display:none">
@@ -852,6 +873,32 @@ if(id==="inicio") atualizarDashboard();
 }
 
 
+
+function atualizarResumoEstoque(lista){
+
+let totalItens = 0;
+let valorTotal = 0;
+
+lista.forEach(p => {
+
+let qtd = Number(p.quantidade || 0);
+let custo = Number(p.custo || p.pCusto || 0);
+
+totalItens += qtd;
+
+valorTotal += qtd * custo;
+
+});
+
+document.getElementById("totalItensEstoque").innerText = totalItens;
+
+document.getElementById("valorEstoque").innerText =
+"R$ " + valorTotal.toFixed(2);
+
+}
+
+
+  
 
 function filtrarClientes(){
 
@@ -2318,6 +2365,33 @@ const pesquisa = document.getElementById("pesquisaEstoque").value.toLowerCase();
 
 if(!tabela) return;
 
+// FILTRAR PRODUTOS
+let filtrados = produtos.filter(p => 
+(p.codigo || "").toLowerCase().includes(pesquisa) ||
+(p.produto || "").toLowerCase().includes(pesquisa)
+);
+
+// CALCULAR RESUMO DO ESTOQUE
+let totalItens = 0;
+let valorTotal = 0;
+
+filtrados.forEach(p => {
+
+let qtd = Number(p.quantidade || 0);
+let custo = Number(p.custo || p.pCusto || 0);
+
+totalItens += qtd;
+valorTotal += qtd * custo;
+
+});
+
+document.getElementById("totalItensEstoque").innerText = totalItens;
+
+document.getElementById("valorEstoque").innerText =
+"R$ " + valorTotal.toFixed(2);
+
+
+// MONTAR TABELA
 tabela.innerHTML = `
 <tr>
 <th>Código</th>
@@ -2329,12 +2403,7 @@ tabela.innerHTML = `
 </tr>
 `;
 
-produtos
-.filter(p => 
-(p.codigo || "").toLowerCase().includes(pesquisa) ||
-(p.produto || "").toLowerCase().includes(pesquisa)
-)
-.forEach(p=>{
+filtrados.forEach(p=>{
 
 let baixo = Number(p.quantidade) <= Number(p.minimo);
 
