@@ -1433,7 +1433,8 @@ itens = dadosVenda.itens.map(i => ({
   nome: i.produtos?.produto || i.nome || produtos.find(p => p.id === i.produto_id)?.produto || "Produto",
   codigo: i.produtos?.codigo || i.codigo || produtos.find(p => p.id === i.produto_id)?.codigo || "-",
   preco: Number(i.preco_unitario ?? i.preco ?? 0),
-  qtd: Number(i.quantidade ?? i.qtd ?? 1)
+  qtd: Number(i.quantidade ?? i.qtd ?? 1),
+  unidade: i.unidade || i.produtos?.unidade_medida || produtos.find(p => p.id === i.produto_id)?.unidade_medida || "UN"
 }));
 
 }else{
@@ -1661,15 +1662,7 @@ if(!venda){
     return;
 }
 
-let vendaCorrigida = {
-    ...venda,
-    itens: venda.itens.map(i => ({
-        ...i,
-        unidade: i.unidade || "UN"
-    }))
-};
-
-imprimirCupom(vendaCorrigida.total, "REIMPRESSÃO", vendaCorrigida);
+imprimirCupom(venda.total, "REIMPRESSÃO", venda);
 
 }
 
