@@ -928,6 +928,7 @@ t.innerHTML = `
 <th>Código</th>
 <th>Venda</th>
 <th>Qtd</th>
+<th>Unidade</th>
 <th>Ação</th>
 </tr>`;
 
@@ -939,6 +940,7 @@ t.innerHTML += `
 <td>${p.codigo ? p.codigo : "-"}</td>
 <td>R$ ${Number(p.venda).toFixed(2)}</td>
 <td>${p.quantidade}</td>
+<td>${p.unidade_medida || "UN"}</td>
 <td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
 </tr>`;
 
