@@ -1985,7 +1985,7 @@ text-align:center;
 }
 
 td:nth-child(2){
-text-align:left;
+text-align:center;
 }
 
 .info{
@@ -2087,13 +2087,14 @@ orc.itens.forEach((i,index)=>{
 let nomeProduto = i.nome || i.descricao || "Produto";
 let sub = i.preco * i.qtd;
 
+let unidadeItem = i.unidade || produtos.find(p => p.produto === nomeProduto)?.unidade_medida || "UN";
  
 html += `
 <tr>
 <td>${index+1}</td>
 <td>${nomeProduto}</td>
 <td>R$ ${i.preco.toFixed(2)}</td>
-<td>${i.qtd} ${i.unidade || "UN"}</td>
+<td>${i.qtd} ${unidadeItem}</td>
 <td>R$ ${sub.toFixed(2)}</td>
 </tr>`;
 });
