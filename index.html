@@ -524,6 +524,11 @@ box-shadow:0 2px 6px rgba(0,0,0,0.3);
 .iconDash{
 color:#2b2b2b;
 }
+
+
+.cardDash:hover .iconDash{
+background:rgba(255,140,42,0.35);
+}
   
 .cardDash span{
 
@@ -843,6 +848,7 @@ document.querySelectorAll("section").forEach(s=>s.style.display="none");
 document.getElementById(id).style.display="block";
 if(id==="estoque") atualizarEstoque();
 if(id==="historico") carregarHistoricoDoBanco();
+if(id==="inicio") atualizarDashboard();
 }
 
 
