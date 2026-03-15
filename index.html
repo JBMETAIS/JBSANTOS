@@ -767,19 +767,27 @@ R$ <span id="total">0.00</span>
 </section>
 
 <section id="estoque" style="display:none">
+
 <h1>Estoque</h1>
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+flex-wrap:wrap;
+">
 
 <input 
 id="pesquisaEstoque"
 placeholder="Pesquisar produto ou código..."
 oninput="atualizarEstoque()"
-style="padding:8px;width:250px;margin-bottom:10px;border-radius:6px;border:1px solid #ccc;"
+style="padding:8px;width:250px;border-radius:6px;border:1px solid #ccc;"
 >
 
 <div id="resumoEstoque" style="
 display:flex;
-gap:30px;
-margin:15px 0;
+gap:25px;
 font-weight:bold;
 color:#fff;
 ">
@@ -792,6 +800,8 @@ color:#fff;
 <div>
 💰 Valor total do estoque: 
 <span id="valorEstoque" style="color:#ff8c2a;font-size:18px;">R$ 0.00</span>
+</div>
+
 </div>
 
 </div>
