@@ -470,12 +470,14 @@ box-shadow:0 4px 10px rgba(0,0,0,0.4);
 <input id="pVenda" type="number" placeholder="Venda">
 <input id="pQtd" type="number" placeholder="Quantidade">
 <input id="pMin" type="number" placeholder="Mínimo">
+  <label>Unidade de Medida</label>
   <select id="pUnidade">
 <option value="UN">Unidade</option>
 <option value="M">Metro</option>
 <option value="KG">Quilo</option>
 <option value="BR">Barra</option>
 <option value="PC">Peça</option>
+<option value="CX">Caixa</option>   
 </select>
 <button class="primary" onclick="addProduto()">Cadastrar</button>
 </div>
@@ -2105,6 +2107,7 @@ tabela.innerHTML = `
 <th>Código</th>
 <th>Produto</th>
 <th>Qtd</th>
+<th>Unidade</th>
 <th>Status</th>
 <th>Alarme</th>
 </tr>
@@ -2131,7 +2134,11 @@ tabela.innerHTML += `
 <tr>
 <td>${p.codigo ? p.codigo : "-"}</td>
 <td>${p.produto}</td>
-<td style="text-align:center;">${p.quantidade}</td>
+<td style="text-align:center;cursor:pointer;"
+onclick="editarEstoque('${p.id}',${p.quantidade})">
+${p.quantidade}
+</td>
+<td style="text-align:center;">${p.unidade_medida || "UN"}</td>
 <td style="text-align:center;color:${cor};font-weight:bold;">${status}</td>
 <td style="text-align:center;">${bolinha}</td>
 </tr>
@@ -3652,7 +3659,39 @@ async function logout(){
   }
 
 }, 300);
-  
+
+
+async function editarEstoque(id, qtdAtual){
+
+let novaQtd = prompt("Editar quantidade em estoque:", qtdAtual);
+
+if(novaQtd === null) return;
+
+novaQtd = parseFloat(novaQtd);
+
+if(isNaN(novaQtd)){
+alert("Quantidade inválida");
+return;
+}
+
+const { error } = await supabaseClient
+.from("produtos")
+.update({ quantidade: novaQtd })
+.eq("id", id);
+
+if(error){
+alert("Erro ao atualizar estoque");
+console.log(error);
+return;
+}
+
+await carregarProdutos();
+atualizarEstoque();
+
+}
+
+
+   
 </script>
 
  
