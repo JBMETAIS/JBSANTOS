@@ -3645,15 +3645,24 @@ document.addEventListener("change", function(e){
 
 
 
-window.onload=function(){
-carregarProdutos(); // 🔥 agora vem da nuvem
+window.onload = async function(){
+
+await carregarProdutos(); 
+
 preencherParcelas();
+
+await carregarClientes();
+
 atualizarClientes();
-carregarClientes();
 
 tEstoque = document.getElementById("tEstoque");
+
 atualizarEstoque();
- 
+
+await carregarHistoricoDoBanco(); // 🔥 carrega vendas
+
+atualizarDashboard(); // 🔥 calcula os cards
+
 };
 
 </script>
