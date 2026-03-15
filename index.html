@@ -3932,7 +3932,13 @@ let vendasHoje = vendas.filter(v =>
 new Date(v.created_at).toDateString() === hoje
 );
 
-let totalVendas = vendasHoje.length;
+let totalVendas = vendasHoje.filter(v => v.tipo === "VENDA").length;
+
+let pedidosDia = vendasHoje.filter(v =>
+v.tipo === "VENDA" ||
+v.tipo === "CONTA_CLIENTE" ||
+v.tipo === "ORCAMENTO"
+).length;
 
 let faturamento = 0;
 let lucro = 0;
@@ -3982,7 +3988,7 @@ document.getElementById("dashVendas").innerText =
 totalVendas;
 
 document.getElementById("dashPedidos").innerText =
-vendasHoje.filter(v => v.tipo === "ORCAMENTO").length;
+pedidosDia;
 
 document.getElementById("dashTicket").innerText =
 "R$ " + ticketMedio.toFixed(2);
