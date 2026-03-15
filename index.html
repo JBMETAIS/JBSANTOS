@@ -1442,7 +1442,8 @@ itens = carrinho.map(i => ({
   nome: i.nome,
   codigo: i.codigo,
   preco: i.preco,
-  qtd: i.qtd
+  qtd: i.qtd,
+  unidade: produtos[i.index]?.unidade_medida || "UN"
 }));
 
 }
@@ -1576,7 +1577,7 @@ html += `
 <td>${i.codigo || "-"}</td>
 <td>
 ${i.nome}<br>
-<span style="padding-left:10px;">${i.qtd} x ${i.preco.toFixed(2)}</span>
+<span style="padding-left:10px;">${i.qtd} ${i.unidade || "UN"} x ${i.preco.toFixed(2)}</span>
 </td>
 <td>${sub.toFixed(2)}</td>
 </tr>
