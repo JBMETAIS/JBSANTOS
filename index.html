@@ -1869,10 +1869,11 @@ console.log("Valor do select:", parcelas.value);
     parcelas: qtdParcelas,
     valorParcela: valorParc,
     itens: carrinho.map(item => ({
-      nome: produtos[item.index].produto,
-      qtd: item.qtd,
-      preco: item.preco
-    }))
+  nome: produtos[item.index].produto,
+  qtd: item.qtd,
+  preco: item.preco,
+  unidade: produtos[item.index].unidade_medida || "UN"
+}))
   };
 
  
@@ -2086,7 +2087,7 @@ html += `
 <td>${index+1}</td>
 <td>${nomeProduto}</td>
 <td>R$ ${i.preco.toFixed(2)}</td>
-<td>${i.qtd}</td>
+<td>${i.qtd} ${i.unidade || "UN"}</td>
 <td>R$ ${sub.toFixed(2)}</td>
 </tr>`;
 });
