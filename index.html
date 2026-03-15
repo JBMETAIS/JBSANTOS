@@ -1134,6 +1134,8 @@ let lucroTotal = 0;
   lucroTotal += lucroItem;
 }
 
+  lucroTotal = Number(lucroTotal.toFixed(2));
+  
 let total = parseFloat(document.getElementById("total").innerText);
 
 let clienteNome = document.getElementById("clienteNome").value || "Consumidor";
@@ -2246,6 +2248,7 @@ vendas = data.map(v => ({
   created_at: v.created_at, // importante
 
   total: v.total,
+  lucro: v.lucro || 0,
   tipo: v.tipo || "VENDA",
 
   nome_do_cliente: v.nome_do_cliente || "Consumidor",
@@ -2281,6 +2284,7 @@ tHistorico.innerHTML=`
 <th>Tipo</th>
 <th>Cliente</th>
 <th>Valor</th>
+<th>Lucro</th>
 <th>Ações</th>
 </tr>`;
 
@@ -2327,6 +2331,13 @@ tHistorico.innerHTML+=`
 
 <td style="color:${cor}; font-weight:bold;">
 ${valorFormatado}
+</td>
+
+<td style="color:green; font-weight:bold;">
+${v.tipo === "VENDA" || v.tipo === "CONTA_CLIENTE"
+  ? "R$ " + Number(v.lucro || 0).toFixed(2)
+  : "-"
+}
 </td>
 
 <td>
