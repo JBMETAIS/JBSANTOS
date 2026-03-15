@@ -1122,6 +1122,18 @@ let subtotal = carrinho.reduce((acc, item) => {
   return acc + (item.preco * item.qtd);
 }, 0);
 
+let lucroTotal = 0;
+
+  for (let item of carrinho) {
+
+  const produto = produtos[item.index];
+
+  let custo = Number(produto.custo || produto.pCusto || 0);
+  let lucroItem = (item.preco - custo) * item.qtd;
+
+  lucroTotal += lucroItem;
+}
+
 let total = parseFloat(document.getElementById("total").innerText);
 
 let clienteNome = document.getElementById("clienteNome").value || "Consumidor";
@@ -1186,6 +1198,7 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   subtotal: subtotal,
   desconto: descontoAtual,
   total: total,
+  lucro: lucroTotal,
   valor_recebido: 0,
   troco: 0,
   parcelas: 1,
@@ -1308,6 +1321,7 @@ const { data: vendaCriada, error: erroVenda } = await supabaseClient
   subtotal: subtotal,
   desconto: descontoAtual,
   total: total,
+  lucro: lucroTotal,
   valor_recebido: valorRecebido,
   troco: troco,
   parcelas: formaPagamento === "cartao"
