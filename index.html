@@ -1661,7 +1661,15 @@ if(!venda){
     return;
 }
 
-imprimirCupom(venda.total, "REIMPRESSÃO", venda);
+let vendaCorrigida = {
+    ...venda,
+    itens: venda.itens.map(i => ({
+        ...i,
+        unidade: i.unidade || "UN"
+    }))
+};
+
+imprimirCupom(vendaCorrigida.total, "REIMPRESSÃO", vendaCorrigida);
 
 }
 
