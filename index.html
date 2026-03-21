@@ -877,13 +877,24 @@ let carrinho=[];
 let descontoAtual=0;
 
 function show(id){
-document.querySelectorAll("section").forEach(s=>s.style.display="none");
-document.getElementById(id).style.display="block";
-if(id==="estoque") atualizarEstoque();
-if(id==="historico") carregarHistoricoDoBanco();
-if(id==="inicio") atualizarDashboard();
-}
 
+  document.querySelectorAll("section").forEach(s=>{
+    if(s) s.style.display="none";
+  });
+
+  const el = document.getElementById(id);
+
+  if(!el){
+    console.error("SEÇÃO NÃO EXISTE:", id);
+    return;
+  }
+
+  el.style.display="block";
+
+  if(id==="estoque") atualizarEstoque();
+  if(id==="historico") carregarHistoricoDoBanco();
+  if(id==="inicio") atualizarDashboard();
+}
 
 
 function atualizarResumoEstoque(lista){
@@ -1259,26 +1270,32 @@ function editarProduto(index){
 
   const p = produtos[index];
 
-// esconde tudo
-document.querySelectorAll("section").forEach(s => s.style.display = "none");
-
-// mostra a tela correta (AJUSTA O ID AQUI SE PRECISAR)
-document.getElementById("produtos").style.display = "block";
+  show("produtos");
 
   setTimeout(() => {
-    document.getElementById("pNome").value = p.produto;
+
+    const nome = document.getElementById("pNome");
+
+    if(!nome){
+      console.error("INPUT NÃO ENCONTRADO");
+      return;
+    }
+
+    nome.value = p.produto;
     document.getElementById("pCodigo").value = p.codigo;
     document.getElementById("pCusto").value = p.custo;
     document.getElementById("pVenda").value = p.venda;
     document.getElementById("pQtd").value = p.quantidade;
     document.getElementById("pMin").value = p.minimo;
     document.getElementById("pUnidade").value = p.unidade_medida || "UN";
+
+    const btn = document.querySelector("#produtos .primary");
+    btn.innerText = "Salvar Alteração";
+
   }, 100);
 
   produtoEditandoId = p.id;
 }
-
-window.editarProduto = editarProduto;
   
 
 async function excluirProduto(index){
