@@ -1255,15 +1255,13 @@ t.innerHTML += `
 
 
 function editarProduto(index){
+  console.log("CLICOU EDITAR", index);
 
   const p = produtos[index];
 
-  // 🔥 PRIMEIRO abre a aba
   show("produtos");
 
-  // 🔥 espera o DOM renderizar
   setTimeout(() => {
-
     document.getElementById("pNome").value = p.produto;
     document.getElementById("pCodigo").value = p.codigo;
     document.getElementById("pCusto").value = p.custo;
@@ -1271,16 +1269,12 @@ function editarProduto(index){
     document.getElementById("pQtd").value = p.quantidade;
     document.getElementById("pMin").value = p.minimo;
     document.getElementById("pUnidade").value = p.unidade_medida || "UN";
-
-    // muda botão
-    const btn = document.querySelector("#produtos .primary");
-    btn.innerText = "Salvar Alteração";
-
   }, 100);
 
-  // guarda ID
   produtoEditandoId = p.id;
 }
+
+window.editarProduto = editarProduto;
   
 
 async function excluirProduto(index){
