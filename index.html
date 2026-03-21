@@ -1080,6 +1080,19 @@ console.log("produtoEditando:", window.produtoEditando);
 
     window.produtoEditando = null;
 
+// 🔄 LIMPA CAMPOS
+pNome.value = "";
+pCodigo.value = "";
+pVenda.value = "";
+pCusto.value = "";
+pQtd.value = "";
+pMin.value = "";
+
+// 🔥 RESTAURA UI
+document.getElementById("btnProduto").innerText = "Cadastrar";
+document.getElementById("pCodigo").disabled = false;
+
+    
     carregarProdutos();
     return; // 🔥 trava aqui
   }
@@ -1228,7 +1241,7 @@ t.innerHTML += `
 <td>
 <div class="btn-group">
 
-<button class="btn-edit" data-id="${p.id}">✏️</button>
+<button class="btn-small" onclick="editarProduto(${index})">✏️</button>
 
 <button class="btn-small red" onclick="excluirProduto(${index})">🗑</button>
 
