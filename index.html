@@ -1258,26 +1258,28 @@ function editarProduto(index){
 
   const p = produtos[index];
 
- console.log(pNome, pCodigo, pCusto);
-  
-  // preenche os campos do formulário
-  pNome.value = p.produto;
-  pCodigo.value = p.codigo;
-  pCusto.value = p.custo;
-  pVenda.value = p.venda;
-  pQtd.value = p.quantidade;
-  pMin.value = p.minimo;
-  pUnidade.value = p.unidade_medida || "UN";
-
-  // guarda o ID do produto que está sendo editado
-  produtoEditandoId = p.id;
-
-  // muda o botão de cadastrar
-  const btn = document.querySelector("#produtos .primary");
-  btn.innerText = "Salvar Alteração";
-
-  // leva pra aba produtos
+  // 🔥 PRIMEIRO abre a aba
   show("produtos");
+
+  // 🔥 espera o DOM renderizar
+  setTimeout(() => {
+
+    document.getElementById("pNome").value = p.produto;
+    document.getElementById("pCodigo").value = p.codigo;
+    document.getElementById("pCusto").value = p.custo;
+    document.getElementById("pVenda").value = p.venda;
+    document.getElementById("pQtd").value = p.quantidade;
+    document.getElementById("pMin").value = p.minimo;
+    document.getElementById("pUnidade").value = p.unidade_medida || "UN";
+
+    // muda botão
+    const btn = document.querySelector("#produtos .primary");
+    btn.innerText = "Salvar Alteração";
+
+  }, 100);
+
+  // guarda ID
+  produtoEditandoId = p.id;
 }
   
 
