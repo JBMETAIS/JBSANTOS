@@ -1259,8 +1259,11 @@ function editarProduto(index){
 
   const p = produtos[index];
 
-show("cadastroProdutos");
-console.log("CHAMOU SHOW PRODUTOS");
+// esconde tudo
+document.querySelectorAll("section").forEach(s => s.style.display = "none");
+
+// mostra a tela correta (AJUSTA O ID AQUI SE PRECISAR)
+document.getElementById("produtos").style.display = "block";
 
   setTimeout(() => {
     document.getElementById("pNome").value = p.produto;
