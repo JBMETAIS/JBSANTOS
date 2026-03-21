@@ -1224,7 +1224,7 @@ t.innerHTML += `
 <td>
 <div class="btn-group">
 
-<button class="btn-small" onclick="editarProduto(${index})">✏️</button>
+<button class="btn-small" onclick="editarProduto('${p.id}')">✏️</button>
 
 <button class="btn-small red" onclick="excluirProduto(${index})">🗑</button>
 
@@ -1237,11 +1237,15 @@ t.innerHTML += `
 
 
 
-function editarProduto(index){
+window.editarProduto = function(id){
 
-  const p = produtos[index];
+  const p = produtos.find(prod => prod.id == id);
 
-  // joga os dados no formulário
+  if(!p){
+    alert("Produto não encontrado");
+    return;
+  }
+
   document.getElementById("pNome").value = p.produto;
   document.getElementById("pCodigo").value = p.codigo;
   document.getElementById("pCusto").value = p.custo;
@@ -1250,8 +1254,7 @@ function editarProduto(index){
   document.getElementById("pMin").value = p.minimo;
   document.getElementById("pUnidade").value = p.unidade_medida || "UN";
 
-  // salva índice pra editar depois
-  window.produtoEditando = p.id;
+  produtoEditando = p.id;
 }
   
 
