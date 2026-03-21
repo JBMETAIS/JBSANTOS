@@ -1200,7 +1200,7 @@ prod.innerHTML+=`<option value="${i}">${p.produto}</option>`;
 }
 
 function atualizarProdutos(){
-const t = tProdutos;
+const t = document.getElementById("tProdutos");
 
 t.innerHTML = `
 <tr>
@@ -1224,7 +1224,7 @@ t.innerHTML += `
 <td>
 <div class="btn-group">
 
-<button class="btn-small" onclick="editarProduto('${p.id}')">✏️</button>
+<button class="btn-edit" data-id="${p.id}">✏️</button>
 
 <button class="btn-small red" onclick="excluirProduto(${index})">🗑</button>
 
@@ -1233,6 +1233,15 @@ t.innerHTML += `
 </tr>`;
 
 });
+
+document.querySelectorAll(".btn-edit").forEach(btn => {
+  btn.addEventListener("click", function(){
+    const id = this.getAttribute("data-id");
+    editarProduto(id);
+  });
+});
+  
+  
 }
 
 
