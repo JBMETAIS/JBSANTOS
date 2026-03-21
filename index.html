@@ -1239,6 +1239,10 @@ t.innerHTML += `
 
 window.editarProduto = function(id){
 
+console.log("ID recebido:", id);
+console.log("Produtos:", produtos);
+
+  
   const p = produtos.find(prod => prod.id == id);
 
   if(!p){
