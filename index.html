@@ -664,7 +664,7 @@ margin-top:120px;
 <option value="PC">Peça</option>
 <option value="CX">Caixa</option>   
 </select>
-<button class="primary" onclick="addProduto()">Cadastrar</button>
+<button id="btnProduto" class="primary" onclick="addProduto()">Cadastrar</button>
 </div>
 <table id="tProdutos"></table>
 </section>
@@ -1252,8 +1252,8 @@ document.querySelectorAll(".btn-edit").forEach(btn => {
 
 window.editarProduto = function(id){
 
-  console.log("ID recebido:", id);
-
+console.log("SALVANDO - produtoEditando:", window.produtoEditando);
+  
   const p = produtos.find(prod => String(prod.id) === String(id));
 
   if(!p){
@@ -1261,8 +1261,7 @@ window.editarProduto = function(id){
     return;
   }
 
-  console.log("ACHOU:", p);
-
+  // preenche formulário
   document.getElementById("pNome").value = p.produto;
   document.getElementById("pCodigo").value = p.codigo;
   document.getElementById("pCusto").value = p.custo;
@@ -1271,7 +1270,20 @@ window.editarProduto = function(id){
   document.getElementById("pMin").value = p.minimo;
   document.getElementById("pUnidade").value = p.unidade_medida || "UN";
 
-  produtoEditando = p.id;
+  // 🔥 ATIVA MODO EDIÇÃO
+  window.produtoEditando = String(p.id);
+
+  console.log("EDITANDO ID:", window.produtoEditando);
+
+  // 🔥 MUDA BOTÃO
+  document.getElementById("btnProduto").innerText = "Salvar";
+
+  // 🔥 BLOQUEIA CÓDIGO
+  document.getElementById("pCodigo").disabled = true;
+
+  // 🔥 MOSTRA CANCELAR (se tiver)
+  const btnCancelar = document.getElementById("btnCancelar");
+  if(btnCancelar) btnCancelar.style.display = "inline-block";
 }
   
 
