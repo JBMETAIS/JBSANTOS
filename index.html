@@ -871,30 +871,18 @@ let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
 let orcamentoEmEdicaoId = null;
-let produtoEditandoId = null;
 
 let carrinho=[];
 let descontoAtual=0;
 
 function show(id){
-
-  document.querySelectorAll("section").forEach(s=>{
-    if(s) s.style.display="none";
-  });
-
-  const el = document.getElementById(id);
-
-  if(!el){
-    console.error("SEÇÃO NÃO EXISTE:", id);
-    return;
-  }
-
-  el.style.display="block";
-
-  if(id==="estoque") atualizarEstoque();
-  if(id==="historico") carregarHistoricoDoBanco();
-  if(id==="inicio") atualizarDashboard();
+document.querySelectorAll("section").forEach(s=>s.style.display="none");
+document.getElementById(id).style.display="block";
+if(id==="estoque") atualizarEstoque();
+if(id==="historico") carregarHistoricoDoBanco();
+if(id==="inicio") atualizarDashboard();
 }
+
 
 
 function atualizarResumoEstoque(lista){
@@ -1052,53 +1040,6 @@ async function addProduto() {
   const quantidade = Number(pQtd.value);
   const minimo = Number(pMin.value);
   const unidade = pUnidade.value;
-
-
-// 🔥 MODO EDIÇÃO
-if(produtoEditandoId){
-
-console.log("ID EDITANDO:", produtoEditandoId);
-  
-  const { error } = await supabaseClient
-    .from("produtos")
-    .update({
-      produto: nome,
-      codigo: codigo,
-      custo: custo,
-      venda: venda,
-      quantidade: quantidade,
-      minimo: minimo,
-      unidade_medida: unidade
-    })
-    .eq("id", produtoEditandoId);
-
-  if(error){
-    console.error(error);
-    alert("Erro ao atualizar produto");
-    return;
-  }
-
-  alert("Produto atualizado com sucesso!");
-
-  produtoEditandoId = null;
-
-  // volta botão ao normal
-  const btn = document.querySelector("#produtos .primary");
-  btn.innerText = "Cadastrar";
-
-  // limpa campos
-  pNome.value = "";
-  pCodigo.value = "";
-  pVenda.value = "";
-  pCusto.value = "";
-  pQtd.value = "";
-  pMin.value = "";
-
-  carregarProdutos();
-
-  return; // 🚨 MUITO IMPORTANTE
-}
-  
   
   if(!nome || !codigo){
     alert("Preencha nome e código!");
@@ -1106,17 +1047,11 @@ console.log("ID EDITANDO:", produtoEditandoId);
   }
 
   // 🔎 Verifica se já existe produto com esse código
-let query = supabaseClient
-  .from("produtos")
-  .select("*")
-  .eq("codigo", codigo);
-
-// só aplica isso se estiver editando
-if(produtoEditandoId){
-  query = query.neq("id", produtoEditandoId);
-}
-
-const { data: produtoExistente, error: erroBusca } = await query.maybeSingle();
+  const { data: produtoExistente, error: erroBusca } = await supabaseClient
+    .from("produtos")
+    .select("*")
+    .eq("codigo", codigo)
+    .single();
 
   if (produtoExistente) {
 
@@ -1250,53 +1185,12 @@ t.innerHTML += `
 <td>R$ ${Number(p.venda).toFixed(2)}</td>
 <td>${p.quantidade}</td>
 <td>${p.unidade_medida || "UN"}</td>
-<td>
-<div class="btn-group">
-
-<button class="btn-small" onclick="editarProduto(${index})">✏️</button>
-
-<button class="btn-small red" onclick="excluirProduto(${index})">🗑</button>
-
-</div>
-</td>
+<td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
 </tr>`;
 
 });
 }
 
-
-function editarProduto(index){
-  console.log("CLICOU EDITAR", index);
-
-  const p = produtos[index];
-
-  show("produtos");
-
-  setTimeout(() => {
-
-    const nome = document.getElementById("pNome");
-
-    if(!nome){
-      console.error("INPUT NÃO ENCONTRADO");
-      return;
-    }
-
-    nome.value = p.produto;
-    document.getElementById("pCodigo").value = p.codigo;
-    document.getElementById("pCusto").value = p.custo;
-    document.getElementById("pVenda").value = p.venda;
-    document.getElementById("pQtd").value = p.quantidade;
-    document.getElementById("pMin").value = p.minimo;
-    document.getElementById("pUnidade").value = p.unidade_medida || "UN";
-
-    const btn = document.querySelector("#produtos .primary");
-    btn.innerText = "Salvar Alteração";
-
-  }, 100);
-
-  produtoEditandoId = p.id;
-}
-  
 
 async function excluirProduto(index){
 
