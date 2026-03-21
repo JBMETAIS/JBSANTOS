@@ -1100,7 +1100,7 @@ console.log("ID EDITANDO:", produtoEditandoId);
     .select("*")
     .eq("codigo", codigo)
     .neq("id", produtoEditandoId)
-    .single();
+    .maybeSingle();
 
   if (produtoExistente) {
 
