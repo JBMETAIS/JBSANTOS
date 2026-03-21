@@ -1248,21 +1248,16 @@ document.querySelectorAll(".btn-edit").forEach(btn => {
 
 window.editarProduto = function(id){
 
-console.log("ID recebido:", id);
-console.log("Produtos:", produtos);
+  console.log("ID recebido:", id);
 
-  
- console.log("Comparando:");
-produtos.forEach(prod => {
-  if(String(prod.id) === String(id)){
-    console.log("ACHOU:", prod);
-  }
-});
+  const p = produtos.find(prod => String(prod.id) === String(id));
 
   if(!p){
     alert("Produto não encontrado");
     return;
   }
+
+  console.log("ACHOU:", p);
 
   document.getElementById("pNome").value = p.produto;
   document.getElementById("pCodigo").value = p.codigo;
