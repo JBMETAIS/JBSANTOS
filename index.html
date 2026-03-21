@@ -871,6 +871,7 @@ let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
 let orcamentoEmEdicaoId = null;
+let produtoEditandoId = null;
 
 let carrinho=[];
 let descontoAtual=0;
@@ -1040,6 +1041,51 @@ async function addProduto() {
   const quantidade = Number(pQtd.value);
   const minimo = Number(pMin.value);
   const unidade = pUnidade.value;
+
+
+// 🔥 MODO EDIÇÃO
+if(produtoEditandoId){
+
+  const { error } = await supabaseClient
+    .from("produtos")
+    .update({
+      produto: nome,
+      codigo: codigo,
+      custo: custo,
+      venda: venda,
+      quantidade: quantidade,
+      minimo: minimo,
+      unidade_medida: unidade
+    })
+    .eq("id", produtoEditandoId);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao atualizar produto");
+    return;
+  }
+
+  alert("Produto atualizado com sucesso!");
+
+  produtoEditandoId = null;
+
+  // volta botão ao normal
+  const btn = document.querySelector("#produtos .primary");
+  btn.innerText = "Cadastrar";
+
+  // limpa campos
+  pNome.value = "";
+  pCodigo.value = "";
+  pVenda.value = "";
+  pCusto.value = "";
+  pQtd.value = "";
+  pMin.value = "";
+
+  carregarProdutos();
+
+  return; // 🚨 MUITO IMPORTANTE
+}
+  
   
   if(!nome || !codigo){
     alert("Preencha nome e código!");
@@ -1051,6 +1097,7 @@ async function addProduto() {
     .from("produtos")
     .select("*")
     .eq("codigo", codigo)
+    .neq("id", produtoEditandoId)
     .single();
 
   if (produtoExistente) {
@@ -1185,12 +1232,45 @@ t.innerHTML += `
 <td>R$ ${Number(p.venda).toFixed(2)}</td>
 <td>${p.quantidade}</td>
 <td>${p.unidade_medida || "UN"}</td>
-<td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
+<td>
+<div class="btn-group">
+
+<button class="btn-small" onclick="editarProduto(${index})">✏️</button>
+
+<button class="btn-small red" onclick="excluirProduto(${index})">🗑</button>
+
+</div>
+</td>
 </tr>`;
 
 });
 }
 
+
+function editarProduto(index){
+
+  const p = produtos[index];
+
+  // preenche os campos do formulário
+  pNome.value = p.produto;
+  pCodigo.value = p.codigo;
+  pCusto.value = p.custo;
+  pVenda.value = p.venda;
+  pQtd.value = p.quantidade;
+  pMin.value = p.minimo;
+  pUnidade.value = p.unidade_medida || "UN";
+
+  // guarda o ID do produto que está sendo editado
+  produtoEditandoId = p.id;
+
+  // muda o botão de cadastrar
+  const btn = document.querySelector("#produtos .primary");
+  btn.innerText = "Salvar Alteração";
+
+  // leva pra aba produtos
+  show("produtos");
+}
+  
 
 async function excluirProduto(index){
 
