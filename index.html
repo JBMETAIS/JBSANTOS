@@ -1036,6 +1036,9 @@ parcelas.innerHTML+=`<option value="${i}">${i}x</option>`;
   
 async function addProduto() {
 
+
+console.log("produtoEditando:", window.produtoEditando);
+  
   const nome = pNome.value.trim();
   const codigo = pCodigo.value.trim();
   const custo = Number(pCusto.value);
