@@ -871,6 +871,7 @@ let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
 let orcamentoEmEdicaoId = null;
+let produtoEditando = null;
 
 let carrinho=[];
 let descontoAtual=0;
@@ -1040,48 +1041,20 @@ async function addProduto() {
   const quantidade = Number(pQtd.value);
   const minimo = Number(pMin.value);
   const unidade = pUnidade.value;
-  
+
   if(!nome || !codigo){
     alert("Preencha nome e código!");
     return;
   }
 
-  // 🔎 Verifica se já existe produto com esse código
-  const { data: produtoExistente, error: erroBusca } = await supabaseClient
-    .from("produtos")
-    .select("*")
-    .eq("codigo", codigo)
-    .single();
+  // ============================
+  // 🔥 MODO EDIÇÃO
+  // ============================
+  if(window.produtoEditando){
 
-  if (produtoExistente) {
-
-    // 🔄 Se já existir → soma quantidade
-    const novaQuantidade = produtoExistente.quantidade + quantidade;
-
-    const { error: erroUpdate } = await supabaseClient
+    const { error } = await supabaseClient
       .from("produtos")
       .update({
-        quantidade: novaQuantidade,
-        custo: custo,
-        venda: venda,
-        produto: nome
-      })
-      .eq("codigo", codigo);
-
-    if (erroUpdate) {
-      console.error(erroUpdate);
-      alert("Erro ao atualizar produto");
-      return;
-    }
-
-    alert("Produto atualizado e estoque somado!");
-
-  } else {
-
-    // ➕ Se não existir → cria novo
-    const { error: erroInsert } = await supabaseClient
-      .from("produtos")
-      .insert([{
         produto: nome,
         codigo: codigo,
         custo: custo,
@@ -1089,18 +1062,81 @@ async function addProduto() {
         quantidade: quantidade,
         minimo: minimo,
         unidade_medida: unidade
-      }]);
+      })
+      .eq("id", window.produtoEditando);
 
-    if (erroInsert) {
-      console.error(erroInsert);
-      alert("Erro ao salvar produto");
+    if(error){
+      console.error(error);
+      alert("Erro ao editar produto");
       return;
     }
 
-    alert("Produto cadastrado com sucesso!");
+    alert("Produto atualizado com sucesso!");
+
+    window.produtoEditando = null;
+
+  } else {
+
+    // ============================
+    // 🔎 VERIFICA SE JÁ EXISTE
+    // ============================
+    const { data: produtoExistente } = await supabaseClient
+      .from("produtos")
+      .select("*")
+      .eq("codigo", codigo)
+      .single();
+
+    if (produtoExistente) {
+
+      // 🔄 SOMA ESTOQUE
+      const novaQuantidade = produtoExistente.quantidade + quantidade;
+
+      const { error: erroUpdate } = await supabaseClient
+        .from("produtos")
+        .update({
+          quantidade: novaQuantidade,
+          custo: custo,
+          venda: venda,
+          produto: nome
+        })
+        .eq("codigo", codigo);
+
+      if (erroUpdate) {
+        console.error(erroUpdate);
+        alert("Erro ao atualizar produto");
+        return;
+      }
+
+      alert("Produto atualizado e estoque somado!");
+
+    } else {
+
+      // ➕ NOVO PRODUTO
+      const { error: erroInsert } = await supabaseClient
+        .from("produtos")
+        .insert([{
+          produto: nome,
+          codigo: codigo,
+          custo: custo,
+          venda: venda,
+          quantidade: quantidade,
+          minimo: minimo,
+          unidade_medida: unidade
+        }]);
+
+      if (erroInsert) {
+        console.error(erroInsert);
+        alert("Erro ao salvar produto");
+        return;
+      }
+
+      alert("Produto cadastrado com sucesso!");
+    }
   }
 
-  // limpa campos
+  // ============================
+  // 🔄 LIMPA CAMPOS
+  // ============================
   pNome.value = "";
   pCodigo.value = "";
   pVenda.value = "";
@@ -1185,12 +1221,39 @@ t.innerHTML += `
 <td>R$ ${Number(p.venda).toFixed(2)}</td>
 <td>${p.quantidade}</td>
 <td>${p.unidade_medida || "UN"}</td>
-<td><button class="red" onclick="excluirProduto(${index})">Excluir</button></td>
+<td>
+<div class="btn-group">
+
+<button class="btn-small" onclick="editarProduto(${index})">✏️</button>
+
+<button class="btn-small red" onclick="excluirProduto(${index})">🗑</button>
+
+</div>
+</td>
 </tr>`;
 
 });
 }
 
+
+
+function editarProduto(index){
+
+  const p = produtos[index];
+
+  // joga os dados no formulário
+  document.getElementById("pNome").value = p.produto;
+  document.getElementById("pCodigo").value = p.codigo;
+  document.getElementById("pCusto").value = p.custo;
+  document.getElementById("pVenda").value = p.venda;
+  document.getElementById("pQtd").value = p.quantidade;
+  document.getElementById("pMin").value = p.minimo;
+  document.getElementById("pUnidade").value = p.unidade_medida || "UN";
+
+  // salva índice pra editar depois
+  window.produtoEditando = p.id;
+}
+  
 
 async function excluirProduto(index){
 
