@@ -1095,12 +1095,17 @@ console.log("ID EDITANDO:", produtoEditandoId);
   }
 
   // 🔎 Verifica se já existe produto com esse código
-  const { data: produtoExistente, error: erroBusca } = await supabaseClient
-    .from("produtos")
-    .select("*")
-    .eq("codigo", codigo)
-    .neq("id", produtoEditandoId)
-    .maybeSingle();
+let query = supabaseClient
+  .from("produtos")
+  .select("*")
+  .eq("codigo", codigo);
+
+// só aplica isso se estiver editando
+if(produtoEditandoId){
+  query = query.neq("id", produtoEditandoId);
+}
+
+const { data: produtoExistente, error: erroBusca } = await query.maybeSingle();
 
   if (produtoExistente) {
 
