@@ -1046,6 +1046,8 @@ async function addProduto() {
 // 🔥 MODO EDIÇÃO
 if(produtoEditandoId){
 
+console.log("ID EDITANDO:", produtoEditandoId);
+  
   const { error } = await supabaseClient
     .from("produtos")
     .update({
@@ -1251,6 +1253,8 @@ function editarProduto(index){
 
   const p = produtos[index];
 
+ console.log("PRODUTO CLICADO:", p);
+  
   // preenche os campos do formulário
   pNome.value = p.produto;
   pCodigo.value = p.codigo;
