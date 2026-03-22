@@ -840,6 +840,7 @@ style="padding:8px;width:300px;margin-bottom:10px;border-radius:6px;border:1px s
 <input id="confCnpj" placeholder="CNPJ">
 <input id="confEndereco" placeholder="Endereço">
 <input id="confTelefone" placeholder="Telefone">
+<input id="confEmail" placeholder="E-mail da Empresa">
 <button id="btnSalvar" class="primary">Salvar</button>
 </div>
 </section>
@@ -2930,7 +2931,8 @@ const dados = {
 nome: confNome.value,
 cnpj: confCnpj.value,
 endereco: confEndereco.value,
-telefone: confTelefone.value
+telefone: confTelefone.value,
+email: confEmail.value
 };
 
 const { data: empresaExistente, error: err1 } = await supabaseClient
@@ -4160,6 +4162,7 @@ document.getElementById("confNome").value = data.nome || "";
 document.getElementById("confCnpj").value = data.cnpj || "";
 document.getElementById("confEndereco").value = data.endereco || "";
 document.getElementById("confTelefone").value = data.telefone || "";
+document.getElementById("confEmail").value = data.email || "";
 }
 }
 
