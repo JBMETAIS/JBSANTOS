@@ -904,6 +904,7 @@ let clientes = [];
 let extratos = JSON.parse(localStorage.getItem("extratosJB")) || [];
 let numeroRecibo = parseInt(localStorage.getItem("numeroRecibo")) || 1;
 let clientePagamentoAtual = null;
+let clienteEditando = null;
 let orcamentoEmEdicaoId = null;
 let produtoEditando = null;
 
@@ -3087,33 +3088,64 @@ let telefone = cTelefone.value.trim();
 let limite = parseFloat(cLimite.value) || 500;
 
 if(!nome){
-alert("Digite o nome do cliente");
-return;
+  alert("Digite o nome do cliente");
+  return;
 }
 
-const { data, error } = await supabaseClient
-.from("clientes")
-.insert([{
-nome: nome,
-telefone: telefone,
-limite: limite
-}])
-.select();
+// 🔥 MODO EDIÇÃO
+if(clienteEditando){
 
-console.log("ID INSERIDO:", data[0].id);
-console.log("ERROR:", error);
+  const { error } = await supabaseClient
+  .from("clientes")
+  .update({
+    nome: nome,
+    telefone: telefone,
+    limite: limite
+  })
+  .eq("id", clienteEditando);
 
-if(error){
-console.error(error);
-alert("Erro ao cadastrar cliente");
-return;
+  if(error){
+    console.error(error);
+    alert("Erro ao atualizar cliente");
+    return;
+  }
+
+  alert("Cliente atualizado com sucesso!");
+
+  clienteEditando = null;
+
+} else {
+
+  // 🔥 CADASTRO NORMAL (SEU CÓDIGO ORIGINAL)
+  const { data, error } = await supabaseClient
+  .from("clientes")
+  .insert([{
+    nome: nome,
+    telefone: telefone,
+    limite: limite
+  }])
+  .select();
+
+  console.log("ID INSERIDO:", data?.[0]?.id);
+  console.log("ERROR:", error);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao cadastrar cliente");
+    return;
+  }
+
+  alert("Cliente cadastrado com sucesso!");
 }
 
-alert("Cliente cadastrado com sucesso!");
-
+// 🔥 LIMPAR FORMULÁRIO
 cNome.value="";
 cTelefone.value="";
 cLimite.value=500;
+
+// 🔥 VOLTAR BOTÃO
+const btn = document.querySelector("#clientes .primary");
+if(btn) btn.innerText = "Cadastrar Cliente";
 
 carregarClientes(); // 🔥 atualiza direto do banco
 }
@@ -3475,45 +3507,28 @@ await carregarClientes();
 }
 
 
-async function editarCliente(clienteId){
+function editarCliente(clienteId){
 
-const cliente = clientes.find(c => c.id == clienteId);
-if(!cliente){
-alert("Cliente não encontrado");
-return;
+  const cliente = clientes.find(c => c.id == clienteId);
+
+  if(!cliente){
+    alert("Cliente não encontrado");
+    return;
+  }
+
+  // 🔥 preenche formulário
+  document.getElementById("cNome").value = cliente.nome;
+  document.getElementById("cTelefone").value = cliente.telefone || "";
+  document.getElementById("cLimite").value = cliente.limite || 500;
+
+  // 🔥 ativa modo edição
+  clienteEditando = cliente.id;
+
+  // 🔥 muda botão
+  const btn = document.querySelector("#clientes .primary");
+  if(btn) btn.innerText = "Salvar";
+
 }
-
-let novoNome = prompt("Editar nome:", cliente.nome);
-if(novoNome === null) return;
-
-let novoTelefone = prompt("Editar telefone:", cliente.telefone || "");
-if(novoTelefone === null) return;
-
-let novoLimite = prompt("Editar limite:", cliente.limite);
-if(novoLimite === null) return;
-
-novoLimite = parseFloat(novoLimite) || 0;
-
-const { error } = await supabaseClient
-.from("clientes")
-.update({
-nome: novoNome.trim(),
-telefone: novoTelefone.trim(),
-limite: novoLimite
-})
-.eq("id", clienteId);
-
-if(error){
-console.error(error);
-alert("Erro ao atualizar cliente");
-return;
-}
-
-alert("Cliente atualizado com sucesso!");
-
-await carregarClientes();
-}
-
 
 
 
