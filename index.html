@@ -871,6 +871,31 @@ style="padding:8px;width:300px;margin:15px 0;border-radius:6px;border:1px solid 
 </div>
 </div>
 
+
+<div id="modalEstoque" class="modal-overlay">
+  <div class="modal-box">
+    <h3>Editar Estoque</h3>
+
+    <p><b>Produto:</b> <span id="mNome"></span></p>
+    <p><b>Código:</b> <span id="mCodigo"></span></p>
+    <p><b>Custo:</b> R$ <span id="mCusto"></span></p>
+    <p><b>Venda:</b> R$ <span id="mVenda"></span></p>
+
+    <label>Quantidade</label>
+    <input id="mQtd" type="number">
+
+    <label>Estoque Mínimo</label>
+    <input id="mMin" type="number">
+
+    <div class="modal-botoes">
+      <button class="btn-confirmar" onclick="salvarEstoque()">Salvar</button>
+      <button class="btn-cancelar" onclick="fecharModalEstoque()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
+   
 <script>
 
 let produtos=JSON.parse(localStorage.getItem("produtosJB"))||[];
@@ -2596,6 +2621,71 @@ tabela.innerHTML += `
 }
 
 
+
+
+   let produtoEstoqueEditando = null;
+
+function abrirModalEstoque(id){
+
+  const p = produtos.find(prod => String(prod.id) === String(id));
+
+  if(!p){
+    alert("Produto não encontrado");
+    return;
+  }
+
+  produtoEstoqueEditando = p.id;
+
+  // preenche dados
+  mNome.innerText = p.produto;
+  mCodigo.innerText = p.codigo;
+  mCusto.innerText = Number(p.custo).toFixed(2);
+  mVenda.innerText = Number(p.venda).toFixed(2);
+
+  mQtd.value = p.quantidade;
+  mMin.value = p.minimo;
+
+  document.getElementById("modalEstoque").style.display = "flex";
+}
+
+
+
+ async function salvarEstoque(){
+
+  if(!produtoEstoqueEditando) return;
+
+  const novaQtd = Number(mQtd.value);
+  const novoMin = Number(mMin.value);
+
+  const { error } = await supabaseClient
+  .from("produtos")
+  .update({
+    quantidade: novaQtd,
+    minimo: novoMin
+  })
+  .eq("id", produtoEstoqueEditando);
+
+  if(error){
+    console.error(error);
+    alert("Erro ao atualizar estoque");
+    return;
+  }
+
+  alert("Estoque atualizado!");
+
+  fecharModalEstoque();
+  carregarProdutos();
+}
+   
+
+
+     function fecharModalEstoque(){
+  document.getElementById("modalEstoque").style.display = "none";
+  produtoEstoqueEditando = null;
+}
+
+   
+
 function filtrarEstoque(){
 atualizarEstoque();
 }
@@ -4232,91 +4322,6 @@ clientesDevedores;
 
 }
 
-
-
-<div id="modalEstoque" class="modal-overlay">
-  <div class="modal-box">
-    <h3>Editar Estoque</h3>
-
-    <p><b>Produto:</b> <span id="mNome"></span></p>
-    <p><b>Código:</b> <span id="mCodigo"></span></p>
-    <p><b>Custo:</b> R$ <span id="mCusto"></span></p>
-    <p><b>Venda:</b> R$ <span id="mVenda"></span></p>
-
-    <label>Quantidade</label>
-    <input id="mQtd" type="number">
-
-    <label>Estoque Mínimo</label>
-    <input id="mMin" type="number">
-
-    <div class="modal-botoes">
-      <button class="btn-confirmar" onclick="salvarEstoque()">Salvar</button>
-      <button class="btn-cancelar" onclick="fecharModalEstoque()">Cancelar</button>
-    </div>
-  </div>
-</div>
-
-
-   let produtoEstoqueEditando = null;
-
-function abrirModalEstoque(id){
-
-  const p = produtos.find(prod => String(prod.id) === String(id));
-
-  if(!p){
-    alert("Produto não encontrado");
-    return;
-  }
-
-  produtoEstoqueEditando = p.id;
-
-  // preenche dados
-  mNome.innerText = p.produto;
-  mCodigo.innerText = p.codigo;
-  mCusto.innerText = Number(p.custo).toFixed(2);
-  mVenda.innerText = Number(p.venda).toFixed(2);
-
-  mQtd.value = p.quantidade;
-  mMin.value = p.minimo;
-
-  document.getElementById("modalEstoque").style.display = "flex";
-}
-
-
-   async function salvarEstoque(){
-
-  if(!produtoEstoqueEditando) return;
-
-  const novaQtd = Number(mQtd.value);
-  const novoMin = Number(mMin.value);
-
-  const { error } = await supabaseClient
-  .from("produtos")
-  .update({
-    quantidade: novaQtd,
-    minimo: novoMin
-  })
-  .eq("id", produtoEstoqueEditando);
-
-  if(error){
-    console.error(error);
-    alert("Erro ao atualizar estoque");
-    return;
-  }
-
-  alert("Estoque atualizado!");
-
-  fecharModalEstoque();
-  carregarProdutos();
-}
-
-
-   function fecharModalEstoque(){
-  document.getElementById("modalEstoque").style.display = "none";
-  produtoEstoqueEditando = null;
-}
-
-   
    
 </script>
 
