@@ -1269,7 +1269,10 @@ t.innerHTML += `
 <td>
 <div class="btn-group">
 
-<button class="btn-edit" data-id="${p.id}">✏️</button>
+<div class="tooltip">
+  <button class="btn-small btn-edit" data-id="${p.id}">✏️</button>
+  <span class="tooltip-text">Editar Produto</span>
+</div>
 
 <button class="btn-small red" onclick="excluirProduto(${index})">🗑</button>
 
