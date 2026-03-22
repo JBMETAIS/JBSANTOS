@@ -657,6 +657,7 @@ margin-top:120px;
 <input id="pMin" type="number" placeholder="Mínimo">
 <label>Unidade de Medida</label>
 <select id="pUnidade">
+<option value="">Selecionar</option>
 <option value="UN">Unidade</option>
 <option value="M">Metro</option>
 <option value="KG">Quilo</option>
@@ -1087,6 +1088,7 @@ if(window.produtoEditando){
    pCusto.value = "";
    pQtd.value = "";
    pMin.value = "";
+   pUnidade.value = "";
 
    // 🔥 RESTAURA BOTÃO
    document.getElementById("btnProduto").innerText = "Cadastrar";
@@ -1161,6 +1163,7 @@ pVenda.value = "";
 pCusto.value = "";
 pQtd.value = "";
 pMin.value = "";
+pUnidade.value = "";
 
 carregarProdutos();
 }
