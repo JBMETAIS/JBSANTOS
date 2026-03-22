@@ -4093,55 +4093,6 @@ atualizarDashboard(); // 🔥 calcula os cards
 // Variável global (declare apenas uma vez no seu projeto inteiro)
 let config = {};
 
-// Função para salvar
-async function salvarConfig() {
-
-const dados = {
-nome: document.getElementById("confNome").value,
-cnpj: document.getElementById("confCnpj").value,
-endereco: document.getElementById("confEndereco").value,
-telefone: document.getElementById("confTelefone").value
-};
-
-const { data: empresaExistente, error: erroBusca } = await supabaseClient
-.from("empresa")
-.select("*")
-.limit(1)
-.maybeSingle();
-
-if (erroBusca) {
-console.error(erroBusca);
-alert("Erro ao buscar empresa");
-return;
-}
-
-if (empresaExistente) {
-const { error } = await supabaseClient
-.from("empresa")
-.update(dados)
-.eq("id", empresaExistente.id);
-
-if (error) {
-console.error(error);
-alert("Erro ao atualizar");
-return;
-}
-
-} else {
-const { error } = await supabaseClient
-.from("empresa")
-.insert([dados]);
-
-if (error) {
-console.error(error);
-alert("Erro ao salvar");
-return;
-}
-}
-
-alert("Configuração salva com sucesso!");
-}
-
 // Função para carregar
 async function carregarConfig() {
 
@@ -4170,7 +4121,7 @@ document.getElementById("confEmail").value = data.email || "";
 // Quando a página carregar
 document.addEventListener("DOMContentLoaded", () => {
 carregarConfig();
-document.getElementById("btnSalvar").addEventListener("click", salvarConfig);
+document.getElementById("btnSalvar").addEventListener("click", window.salvarConfig);
 });
 
 
