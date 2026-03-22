@@ -1057,31 +1057,45 @@ return;
 // ============================
 if(window.produtoEditando){
 
-const { error } = await supabaseClient
-.from("produtos")
-.update({
-produto: nome,
-codigo: codigo,
-custo: custo,
-venda: venda,
-quantidade: quantidade,
-minimo: minimo,
-unidade_medida: unidade
-})
-.eq("id", window.produtoEditando);
+   const { error } = await supabaseClient
+   .from("produtos")
+   .update({
+      produto: nome,
+      codigo: codigo,
+      custo: custo,
+      venda: venda,
+      quantidade: quantidade,
+      minimo: minimo,
+      unidade_medida: unidade
+   })
+   .eq("id", window.produtoEditando);
 
-if(error){
-console.error(error);
-alert("Erro ao editar produto");
-return;
-}
+   if(error){
+      console.error(error);
+      alert("Erro ao editar produto");
+      return;
+   }
 
-alert("Produto atualizado com sucesso!");
+   alert("Produto atualizado com sucesso!");
 
-window.produtoEditando = null;
+   window.produtoEditando = null;
 
-carregarProdutos();
-return; // 🔥 trava aqui
+   // 🔥 LIMPA CAMPOS AQUI
+   pNome.value = "";
+   pCodigo.value = "";
+   pVenda.value = "";
+   pCusto.value = "";
+   pQtd.value = "";
+   pMin.value = "";
+
+   // 🔥 RESTAURA BOTÃO
+   document.getElementById("btnProduto").innerText = "Cadastrar";
+
+   // 🔥 LIBERA O CÓDIGO
+   document.getElementById("pCodigo").disabled = false;
+
+   carregarProdutos();
+   return;
 }
 
 // ============================
