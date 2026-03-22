@@ -667,6 +667,14 @@ margin-top:120px;
 </select>
 <button id="btnProduto" class="primary" onclick="addProduto()">Cadastrar</button>
 </div>
+
+   <input 
+id="pesquisaProduto"
+placeholder="Pesquisar produto ou código..."
+oninput="filtrarProdutos()"
+style="width:100%; padding:10px; margin:15px 0; border-radius:6px; border:1px solid #ccc;"
+>
+   
 <table id="tProdutos"></table>
 </section>
 
@@ -957,7 +965,23 @@ document.getElementById("telefoneCliente").value = data.telefone || "";
 
 
 
+function filtrarProdutos(){
 
+let termo = document.getElementById("pesquisaProduto").value.toLowerCase();
+
+let linhas = document.querySelectorAll("#tProdutos tr");
+
+linhas.forEach((linha, index) => {
+
+   if(index === 0) return; // ignora cabeçalho
+
+   let texto = linha.innerText.toLowerCase();
+
+   linha.style.display = texto.includes(termo) ? "" : "none";
+
+});
+
+}
 
 
 
